@@ -195,9 +195,6 @@
     <ClCompile Include="..\..\..\NSC\NeuroSandCube.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\NSC\SharedState.cpp">
-      <Filter>NSC</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\NSC\SharedStateDistributor.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
@@ -343,9 +340,6 @@
       <Filter>NSC</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\NSC\NeuroSandCube.h">
-      <Filter>NSC</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\NSC\SharedState.h">
       <Filter>NSC</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\NSC\SharedStateDistributor.h">

@@ -40,7 +40,11 @@ void SimpleBuilder::AddMessage(SharedStateDistribution& distribution)
 
 	// testing code
 	std::ostringstream ss;
-	ss << distribution.data->id << ": " << distribution.data->value << " ";
+	ss << distribution.attributes.id << ": " ;
+	if (distribution.attributes.delta)
+		ss << distribution.delta << " ";
+	else
+		ss << distribution.value << " ";
 	std::string s(ss.str());
 	message.append(s);
 
