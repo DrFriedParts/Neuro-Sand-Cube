@@ -42,6 +42,7 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">sandbox_fps</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">sandbox_fps</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -142,7 +143,6 @@
     <ClCompile Include="..\..\..\NSC\MessageDispatchController.cpp" />
     <ClCompile Include="..\..\..\NSC\Networking.cpp" />
     <ClCompile Include="..\..\..\NSC\NeuroSandCube.cpp" />
-    <ClCompile Include="..\..\..\NSC\SharedState.cpp" />
     <ClCompile Include="..\..\..\NSC\SharedStateDistributor.cpp" />
     <ClCompile Include="..\..\..\NSC\MessageBuilder.cpp" />
     <ClCompile Include="..\..\..\NSC\MessageBuilderFactory.cpp" />
@@ -201,7 +201,6 @@
     <ClInclude Include="..\..\..\NSC\MessageDispatcher.h" />
     <ClInclude Include="..\..\..\NSC\Networking.h" />
     <ClInclude Include="..\..\..\NSC\NeuroSandCube.h" />
-    <ClInclude Include="..\..\..\NSC\SharedState.h" />
     <ClInclude Include="..\..\..\NSC\SharedStateDistributor.h" />
     <ClInclude Include="..\..\..\NSC\MessageBuilder.h" />
     <ClInclude Include="..\..\..\NSC\MessageBuilderFactory.h" />

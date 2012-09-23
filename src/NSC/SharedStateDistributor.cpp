@@ -18,13 +18,20 @@ SharedStateDistributor::~SharedStateDistributor(void)
 }
 
 //template <class T>
-void SharedStateDistributor::AddSharedState(boost::variant<int&,float&, bool&> value, std::string id)
+/*void SharedStateDistributor::AddSharedState(SharedState2 value, std::string id)
 {
 	boost::shared_ptr<SharedState> sharedState = boost::shared_ptr<SharedState>(new SharedState(value, id));
 	sharedStates.push_back(sharedState);
+}*/
+
+void SharedStateDistributor::AddSharedState(std::string id, SharedStateFunctor functor)
+{
+	sharedStates[id] = functor;
+	//boost::shared_ptr<SharedState> sharedState = boost::shared_ptr<SharedState>(new SharedState(value, id));
+	//sharedStates.push_back(sharedState);
 }
 
-boost::shared_ptr<SharedState> SharedStateDistributor::FindSharedState(std::string stateID)
+/*boost::shared_ptr<SharedState> SharedStateDistributor::FindSharedState(std::string stateID)
 {
 	for (unsigned int i =0; i < sharedStates.size(); ++i)
 	{
@@ -35,17 +42,24 @@ boost::shared_ptr<SharedState> SharedStateDistributor::FindSharedState(std::stri
 	}
 	return boost::shared_ptr<SharedState>();
 
+}*/
+/*
+SharedStateFunctor* SharedStateDistributor::FindSharedStateFunctor(std::string stateID)
+{
+	auto iterator = sharedStates.find(stateID);
+
+	if (iterator != m_DispatchPool.end())
+		return iterator->second;
+	else
+		return boost::shared_ptr<MessageDispatcher>();
 }
+*/
 
-
-void SharedStateDistributor::AddDistribution(SharedStateAttributes attributes)
+bool SharedStateDistributor::AddDistribution(SharedStateAttributes attributes)
 {
 
 	boost::shared_ptr<SharedStateDistribution> distribution = boost::shared_ptr<SharedStateDistribution>(new SharedStateDistribution());
-	/*distribution->onlyOnChange = attributes.onlyOnChange;
-	distribution->resetOnRestart = attributes.resetOnRestart;
-	distribution->interval = attributes.interval;
-	distribution->consumers = attributes.consumers;*/
+	
 	distribution->attributes = attributes;
 
 	distribution->framesPassedSinceDistribution = 0;
@@ -54,9 +68,13 @@ void SharedStateDistributor::AddDistribution(SharedStateAttributes attributes)
 
 	// add shared state
 
-	distribution->data = FindSharedState(attributes.id);
+	auto iterator = sharedStates.find(attributes.id);
 
-	assert(distribution->data.get() != NULL);
+	
+	if (iterator != sharedStates.end())
+		distribution->valueFunction = iterator->second;
+	else
+		return false;
 
 	distributions.push_back(distribution);
 
@@ -66,6 +84,8 @@ void SharedStateDistributor::AddDistribution(SharedStateAttributes attributes)
 		//AddConsumerDistribution(attributes.consumers[i], distribution);
 		AddConsumerDistribution(distribution);
 	}
+
+	return true;
 
 }
 
@@ -136,13 +156,19 @@ void SharedStateDistributor::Distribute()
 	for (unsigned int i =0; i < distributions.size(); ++i)
 	{
 		boost::shared_ptr<SharedStateDistribution> distribution = distributions[i];
-		bool hasChanged = !(boost::apply_visitor(SharedState_equals(), distribution->data->value , distribution->data->prevValue));
+		distribution->value = distribution->valueFunction();
+		bool hasChanged = !(boost::apply_visitor(SharedState_equals(), distribution->value , distribution->prevValue));
+		
+
 		if ((distribution->attributes.onlyOnChange && hasChanged) || (distribution->framesPassedSinceDistribution >= distribution->attributes.interval && !distribution->attributes.onlyOnChange))
 		{
 			// distribute
 			//AddDistributionMessage(distribution);
 			distribution->framesPassedSinceDistribution = 0;
 			distribution->toBeDistributed = true;
+
+			distribution->delta = boost::apply_visitor(SharedState_difference(), distribution->value , distribution->prevValue);
+			distribution->prevValue = distribution->value;
 
 		}
 		else
@@ -155,7 +181,8 @@ void SharedStateDistributor::Distribute()
 
 		++distribution->framesPassedSinceDistribution;
 
-		distribution->data->prevValue = distribution->data->value;
+		// tk: this will now only be done when the data is distributed
+		//distribution->prevValue = distribution->value;
 	}
 
 	FlushDistribution();
