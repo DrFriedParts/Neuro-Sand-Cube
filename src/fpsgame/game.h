@@ -724,6 +724,9 @@ struct fpsent : dynent, fpsstate
 
     vec muzzle;
 
+	// TK: position where entity spawns
+	vec startingPosition;
+
     fpsent() : weight(100), clientnum(-1), privilege(PRIV_NONE), lastupdate(0), plag(0), ping(0), lifesequence(0), respawned(-1), suicided(-1), lastpain(0), attacksound(-1), attackchan(-1), idlesound(-1), idlechan(-1), frags(0), flags(0), deaths(0), totaldamage(0), totalshots(0), edit(NULL), smoothmillis(-1), playermodel(-1), ai(NULL), ownernum(-1), muzzle(-1, -1, -1)
     {
         name[0] = team[0] = info[0] = 0;
@@ -774,8 +777,13 @@ struct fpsent : dynent, fpsstate
         lastcollect = vec(-1e10f, -1e10f, -1e10f);
         stopattacksound();
         lastnode = -1;
+
+		//startingPosition = vec();
     }
+
+	
 };
+
 
 struct teamscore
 {

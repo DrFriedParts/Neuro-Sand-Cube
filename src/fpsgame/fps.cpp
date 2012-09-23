@@ -603,6 +603,8 @@ namespace game
         if(identexists("mapstart")) execute("mapstart");
 
 		// Init neuro sand cube
+
+		player1->startingPosition = player1->o;
 		NSC::nsc.Initialize(player1);
 
     }
