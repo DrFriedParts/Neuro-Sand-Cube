@@ -216,6 +216,9 @@
     <ClCompile Include="..\..\..\NSC\MessageDispatcher.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\NSC\Logger.cpp">
+      <Filter>NSC</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\fpsgame\ai.h">
@@ -358,6 +361,9 @@
       <Filter>NSC</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\NSC\MessageBuilderFactory.h">
+      <Filter>NSC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\NSC\Logger.h">
       <Filter>NSC</Filter>
     </ClInclude>
   </ItemGroup>

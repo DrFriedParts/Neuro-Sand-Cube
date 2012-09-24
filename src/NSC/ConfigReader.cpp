@@ -1,6 +1,9 @@
 #include "ConfigReader.h"
-
 #include "SharedStateDistributor.h"
+
+#include "Logger.h"
+
+
 
 
 // temp error output
@@ -22,13 +25,15 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 	std::string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 	
 	JSONValue *value = JSON::Parse(str.c_str());
+
+	Logger& logger = Logger::GetInstance();
 	
 	if (value != NULL)
 	{
 		JSONArray root;
 		if (value->IsArray() == false)
 		{
-			print_out("The root element is not an array, Incorrect format.\r\n");
+			logger.Log(std::string("The root element is not an array, Incorrect format.\r\n"));
 		}
 		else
 		{
@@ -37,7 +42,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 			{	
 				if (!root[i]->IsObject())
 				{
-					print_out("Array element: Object expected.\r\n");
+					logger.Log("Array element: Object expected.\r\n");
 				}
 				else
 				{
@@ -53,7 +58,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 						}
 						else
 						{
-							print_out("'id' : String expected.\r\n");	
+							logger.Log("'id' : String expected.\r\n");	
 							delete value;
 							return;
 						}
@@ -70,7 +75,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 							{
 								if (!consumerArray[j]->IsString())
 								{
-									print_out("'consumers' element : String expected.\r\n");	
+									logger.Log("'consumers' element : String expected.\r\n");	
 									delete value;
 									return;
 								}
@@ -82,7 +87,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 						}
 						else
 						{
-							print_out("'consumers' : Array expected.\r\n");		
+							logger.Log("'consumers' : Array expected.\r\n");		
 							delete value;
 							return;
 						}
@@ -94,7 +99,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 							attributes->onlyOnChange = object[L"only_on_change"]->AsBool();
 						else
 						{
-							print_out("'only_on_change' : Bool expected.\r\n");		
+							logger.Log("'only_on_change' : Bool expected.\r\n");		
 							delete value;
 							return;
 						}
@@ -106,7 +111,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 							attributes->resetOnRestart = object[L"reset_counter_on_restart"]->AsBool();
 						else
 						{
-							print_out("'reset_counter_on_restart' : Bool expected.\r\n");	
+							logger.Log("'reset_counter_on_restart' : Bool expected.\r\n");	
 							delete value;
 							return;
 						}
@@ -119,7 +124,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 							attributes->interval = object[L"interval"]->AsNumber();
 						else
 						{
-							print_out("'interval' : Number expected.\r\n");	
+							logger.Log("'interval' : Number expected.\r\n");	
 							delete value;
 							return;
 						}
@@ -132,7 +137,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 							attributes->delta = object[L"delta"]->AsBool();
 						else
 						{
-							print_out("'delta' : Bool expected.\r\n");		
+							logger.Log("'delta' : Bool expected.\r\n");		
 							delete value;
 							return;
 						}
@@ -148,7 +153,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 	}
 	else 
 	{
-		print_out("Failed to parse config file\r\n");
+		logger.Log("Failed to parse config file\r\n");
 	}
 }
 

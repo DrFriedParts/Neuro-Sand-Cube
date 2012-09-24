@@ -1,5 +1,6 @@
 #include "NeuroSandCube.h"
 
+#include "Logger.h"
 #include "ConfigReader.h"
 #include "MessageDispatchController.h"
 #include "MessageDispatcher.h"
@@ -25,8 +26,7 @@ void NeuroSandCube::Initialize(fpsent* player)
 	std::string configFile = "data/NSC/nsc_config.json";
 
 	// others possibilites:
-	// distance
-	// anggle
+
 	// flag captured
 	// velocity
 
@@ -74,13 +74,6 @@ void NeuroSandCube::Initialize(fpsent* player)
 	}
 	);
 
-
-	
-	/*distributor.AddSharedState(boost::variant<int&,float&, bool&>(player->newpos.x),"player_x");
-	distributor.AddSharedState(boost::variant<int&,float&, bool&>(player->newpos.y),"player_y");
-	distributor.AddSharedState(boost::variant<int&,float&, bool&>(player->attacking),"player_left_click");
-	distributor.AddSharedState(boost::variant<int&, float&, bool&>(player->respawned),"level_restart");*/
-
 	SharedStateConfigReader configReader;
 	
 
@@ -95,14 +88,11 @@ void NeuroSandCube::Initialize(fpsent* player)
 		
 		if (distributor.AddDistribution(*attributes))
 		{
-			// to clean up, create TCPDispatcher via factory or other proxy
+			
 			for (unsigned int j=0; j < attributes->consumers.size(); ++j)
 			{
 				auto consumer = std::string(attributes->consumers[j]);
 				std::istringstream oss(consumer);
-				std::string ip, port;
-				getline(oss , ip, ':'); 
-				getline(oss , port, ':'); 
 
 				if (!dispatchController.HasDispatcher(consumer))
 				{
@@ -110,12 +100,12 @@ void NeuroSandCube::Initialize(fpsent* player)
 					dispatchController.AddDispatcher(consumer,dispatcher);
 				}
 			}
-		
-			
+
 		}
 		else
 		{
-			// log
+			
+			Logger::GetInstance().Log("Attempting to add distribution of unsuported state!");
 		}
 		attributes = configReader.Get(++i);
 

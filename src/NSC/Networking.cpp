@@ -1,4 +1,5 @@
 #include "Networking.h"
+#include "Logger.h"
 #include <sstream>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -93,7 +94,9 @@ void TCPClient::_ConnectHandler(const boost::system::error_code& errorCode)
 		// connection successful
 		m_bConnected = true;
 
-		// log connection
+		Logger::GetInstance().Log(m_sAddress,Logger::LOG_INFO);
+		Logger::GetInstance().Log("Connected successfully.",Logger::LOG_INFO);
+
 
 	}
 	else if (m_EndPointIterator != tcp::resolver::iterator())
@@ -167,8 +170,8 @@ void TCPClient::_SendHeaderHandler(const boost::system::error_code& errorCode)
 	}
 	else
 	{
-		// log error
-		// check type and maybe try again? for now, just close
+		Logger::GetInstance().Log(m_sAddress);
+		Logger::GetInstance().Log("Transmission of message header failed!");
 		_CloseConnection();
 	}
 }
@@ -214,37 +217,48 @@ SerialPort::SerialPort(std::string port, int iBaudRate, SerialPort_Parity eParit
 
 SerialPort::~SerialPort()
 {
-
+	_CloseConnection();
 }
 
 
 void SerialPort::Connect()
 {
-	m_Port.open(m_sPort);
-
-	if (!m_Port.is_open())
+	try
 	{
-		// handle errors
-	}
-
-	m_bConnected = true;
-
-	m_Port.set_option(boost::asio::serial_port::baud_rate(m_iBaudRate));
-	if (m_eParity == SP_PARITY_NONE)
-		m_Port.set_option(boost::asio::serial_port::parity(boost::asio::serial_port::parity::none));
-	else if (m_eParity == SP_PARITY_ODD)
-		m_Port.set_option(boost::asio::serial_port::parity(boost::asio::serial_port::parity::odd));
-	else
-		m_Port.set_option(boost::asio::serial_port::parity(boost::asio::serial_port::parity::even));
+		m_Port.open(m_sPort);
 	
-	if (m_fStopBits == 1.0f)
-		m_Port.set_option(boost::asio::serial_port::stop_bits(boost::asio::serial_port::stop_bits::one));
-	else if (m_fStopBits < 2.0f)
-		m_Port.set_option(boost::asio::serial_port::stop_bits(boost::asio::serial_port::stop_bits::onepointfive));
-	else
-		m_Port.set_option(boost::asio::serial_port::stop_bits(boost::asio::serial_port::stop_bits::two));
+		if (!m_Port.is_open())
+		{
+			Logger::GetInstance().Log(m_sPort);
+			Logger::GetInstance().Log("Failed to open serial port!");
+		}
 
-	m_Port.set_option(boost::asio::serial_port::character_size(m_iDataBits));
+		m_bConnected = true;
+
+		m_Port.set_option(boost::asio::serial_port::baud_rate(m_iBaudRate));
+		if (m_eParity == SP_PARITY_NONE)
+			m_Port.set_option(boost::asio::serial_port::parity(boost::asio::serial_port::parity::none));
+		else if (m_eParity == SP_PARITY_ODD)
+			m_Port.set_option(boost::asio::serial_port::parity(boost::asio::serial_port::parity::odd));
+		else
+			m_Port.set_option(boost::asio::serial_port::parity(boost::asio::serial_port::parity::even));
+	
+		if (m_fStopBits == 1.0f)
+			m_Port.set_option(boost::asio::serial_port::stop_bits(boost::asio::serial_port::stop_bits::one));
+		else if (m_fStopBits < 2.0f)
+			m_Port.set_option(boost::asio::serial_port::stop_bits(boost::asio::serial_port::stop_bits::onepointfive));
+		else
+			m_Port.set_option(boost::asio::serial_port::stop_bits(boost::asio::serial_port::stop_bits::two));
+
+		m_Port.set_option(boost::asio::serial_port::character_size(m_iDataBits));
+	}
+	catch (...)
+	{
+		m_bConnected = false;
+
+		Logger::GetInstance().Log(m_sPort);
+		Logger::GetInstance().Log("Failed to open serial port!");
+	}
 }
 
 void SerialPort::Init()
@@ -294,8 +308,8 @@ void SerialPort::_SendHandler(const boost::system::error_code& errorCode)
 	}
 	else
 	{
-		// log error
-		// check type and maybe try again? for now, just close
+		Logger::GetInstance().Log(m_sPort);
+		Logger::GetInstance().Log("Transmission of message failed!");
 		_CloseConnection();
 	}
 }

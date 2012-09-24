@@ -1,4 +1,5 @@
 #include "MessageDispatcher.h"
+#include "Logger.h"
 
 #include <sstream>
 #include <algorithm>
@@ -9,7 +10,13 @@
 
 MessageDispatcher::MessageDispatcher(std::string description)
 {
+	// instantiates appropriate network port based on device description
+	// if its a com address -> serial port
+
+	Logger& logger = Logger::GetInstance();
+
 	
+
 	std::transform(description.begin(), description.end(),description.begin(), ::toupper);
 	std::istringstream oss(description);
 	std::string address, rest;
@@ -62,8 +69,8 @@ MessageDispatcher::MessageDispatcher(std::string description)
 		if (iBaudRate == 0 || iDataBits == 0 || fStopBits == 0.0f)
 		{
 			//FAIL
-			int i=0;
-			// log
+			logger.Log(description);
+			logger.Log(": Failed to initialize serial Port. Check parameters");
 		}
 
 		m_spPort = boost::shared_ptr<SerialPort>(new SerialPort(address,iBaudRate,eParity,iDataBits,fStopBits));
