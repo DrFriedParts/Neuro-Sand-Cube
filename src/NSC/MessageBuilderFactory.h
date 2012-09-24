@@ -13,7 +13,8 @@ public:
 
 	static MessageBuilder& GetBuilder(std::string id);
 
-	static SimpleBuilder simpleBuilder; 
+	static SimpleBuilder m_simpleBuilder; 
+	static JSONBuilder m_JSONBuilder;
 	
 };
 

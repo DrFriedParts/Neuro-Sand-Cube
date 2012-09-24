@@ -16,6 +16,7 @@ public:
 	virtual ~MessageBuilder(void);
 
 	virtual void Add(SharedStateDistribution& distribution) = 0;
+	//virtual void Add(string key, string value
 	virtual std::string Get(int timestamp) = 0;
 
 private:
@@ -33,6 +34,19 @@ public:
 	virtual void Add(SharedStateDistribution& distribution);
 	virtual std::string Get(int framestamp);
 
+	std::string message;
+};
+
+
+class JSONBuilder : public MessageBuilder
+{
+public:
+	JSONBuilder();
+	virtual ~JSONBuilder();
+
+	virtual void Add(SharedStateDistribution& distribution);
+	virtual std::string Get(int framestamp);
+	void Add(std::string key, std::string value, bool str = false);
 	std::string message;
 };
 
