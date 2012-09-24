@@ -15,8 +15,8 @@ public:
     MessageBuilder(void);
 	virtual ~MessageBuilder(void);
 
-	virtual void AddMessage(SharedStateDistribution& distribution) = 0;
-	virtual std::string GetMessage(int timestamp) = 0;
+	virtual void Add(SharedStateDistribution& distribution) = 0;
+	virtual std::string Get(int timestamp) = 0;
 
 private:
 
@@ -30,8 +30,8 @@ public:
 	SimpleBuilder();
 	virtual ~SimpleBuilder();
 
-	virtual void AddMessage(SharedStateDistribution& distribution);
-	virtual std::string GetMessage(int framestamp);
+	virtual void Add(SharedStateDistribution& distribution);
+	virtual std::string Get(int framestamp);
 
 	std::string message;
 };

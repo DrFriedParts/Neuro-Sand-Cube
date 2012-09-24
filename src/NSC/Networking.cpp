@@ -6,8 +6,6 @@ boost::asio::io_service TCPClient::m_IOService;
 
 TCPClient::TCPClient(std::string address, std::string port) :
 	m_Socket(m_IOService), 
-	m_bConnected(false),
-	m_bConnecting(false),
 	m_bAddressResolved(false),
 	m_sAddress(address),
 	m_sPort(port)
@@ -196,3 +194,108 @@ void TCPClient::_SendHandler(const boost::system::error_code& errorCode)
 	}
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///
+// Serial port
+////
+
+
+SerialPort::SerialPort(std::string port, int iBaudRate, SerialPort_Parity eParity, int iDataBits, float fStopBits ) :
+	m_Port(m_IOService), 
+	m_sPort(port),
+	m_iBaudRate(iBaudRate),
+	m_eParity(eParity),
+	m_iDataBits(iDataBits),
+	m_fStopBits(fStopBits)
+{
+	Init();
+}
+
+SerialPort::~SerialPort()
+{
+
+}
+
+
+void SerialPort::Connect()
+{
+	m_Port.open(m_sPort);
+
+	if (!m_Port.is_open())
+	{
+		// handle errors
+	}
+
+	m_bConnected = true;
+
+	m_Port.set_option(boost::asio::serial_port::baud_rate(m_iBaudRate));
+	if (m_eParity == SP_PARITY_NONE)
+		m_Port.set_option(boost::asio::serial_port::parity(boost::asio::serial_port::parity::none));
+	else if (m_eParity == SP_PARITY_ODD)
+		m_Port.set_option(boost::asio::serial_port::parity(boost::asio::serial_port::parity::odd));
+	else
+		m_Port.set_option(boost::asio::serial_port::parity(boost::asio::serial_port::parity::even));
+	
+	if (m_fStopBits == 1.0f)
+		m_Port.set_option(boost::asio::serial_port::stop_bits(boost::asio::serial_port::stop_bits::one));
+	else if (m_fStopBits < 2.0f)
+		m_Port.set_option(boost::asio::serial_port::stop_bits(boost::asio::serial_port::stop_bits::onepointfive));
+	else
+		m_Port.set_option(boost::asio::serial_port::stop_bits(boost::asio::serial_port::stop_bits::two));
+
+	m_Port.set_option(boost::asio::serial_port::character_size(m_iDataBits));
+}
+
+void SerialPort::Init()
+{
+	Connect();
+
+}
+
+
+void SerialPort::Close()
+{
+	m_IOService.post(boost::bind(&SerialPort::_CloseConnection, this));
+}
+
+void SerialPort::_CloseConnection()
+{
+	m_Port.close();
+	m_bConnected = false;
+	m_bConnecting = false;
+}
+
+	
+void SerialPort::Send(std::string message)
+{
+	if (m_bConnected)
+	{
+		m_sMessage = message;
+		_Send();
+	}
+	else
+	{
+		Init();
+	}
+	
+}
+
+void SerialPort::_Send()
+{
+	boost::asio::async_write(m_Port, boost::asio::buffer(m_sMessage), boost::bind(&SerialPort::_SendHandler,this, boost::asio::placeholders::error));
+}
+
+void SerialPort::_SendHandler(const boost::system::error_code& errorCode)
+{
+	if (errorCode == 0)
+	{
+
+	}
+	else
+	{
+		// log error
+		// check type and maybe try again? for now, just close
+		_CloseConnection();
+	}
+}

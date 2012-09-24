@@ -48,7 +48,6 @@ void MessageDispatchController::Send(std::string message, std::string destinatio
 
 	if (dispatcher.get() != NULL)
 	{
-		boost::shared_ptr<TCPDispatcher> d = boost::shared_dynamic_cast<TCPDispatcher>(dispatcher);
 		dispatcher->Send( message);
 	}
 	else

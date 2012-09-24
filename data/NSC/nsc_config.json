@@ -9,24 +9,22 @@
 	{
      "id":"player_y", 
      "consumers":["127.0.0.1:12345"],
-     "only_on_change":true, 
+     "only_on_change":false, 
      "reset_counter_on_restart":true, 
      "interval":500 
     },
     {
-     "id":"distance_traveled", 
-	 "delta" : true,
-     "consumers":["TK-PC:12345","127.0.0.1:12345"],
-     "only_on_change":false, 
+     "id":"player_left_click", 
+     "consumers":["COM1:9600N82","127.0.0.1:12345"],
+     "only_on_change":true, 
      "reset_counter_on_restart":true, 
-     "interval":300 
+     "interval":0 
     },
     {
-     "id":"player_angle", 
-	 "delta" : true,
+     "id":"level_restart", 
      "consumers":["127.0.0.1:12345"],
-     "only_on_change":false, 
+     "only_on_change":true, 
      "reset_counter_on_restart":true, 
-     "interval":300 
+     "interval":0 
     }
 ]

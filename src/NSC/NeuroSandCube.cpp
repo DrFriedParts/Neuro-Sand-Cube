@@ -2,7 +2,7 @@
 
 #include "ConfigReader.h"
 #include "MessageDispatchController.h"
-#include "TCPDispatcher.h"
+#include "MessageDispatcher.h"
 
 #include <sstream>
 #include <boost/foreach.hpp>
@@ -106,7 +106,7 @@ void NeuroSandCube::Initialize(fpsent* player)
 
 				if (!dispatchController.HasDispatcher(consumer))
 				{
-					auto dispatcher = boost::shared_ptr<TCPDispatcher>(new TCPDispatcher(ip,port));
+					auto dispatcher = boost::shared_ptr<MessageDispatcher>(new MessageDispatcher(consumer));
 					dispatchController.AddDispatcher(consumer,dispatcher);
 				}
 			}
@@ -127,5 +127,5 @@ void NeuroSandCube::Initialize(fpsent* player)
 void NeuroSandCube::Update()
 {
 	distributor.Distribute();
-	TCPClient::Update();
+	NetworkPort::Update();
 }

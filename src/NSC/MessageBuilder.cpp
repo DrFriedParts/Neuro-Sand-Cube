@@ -35,7 +35,7 @@ SimpleBuilder::~SimpleBuilder()
 
 }
 
-void SimpleBuilder::AddMessage(SharedStateDistribution& distribution)
+void SimpleBuilder::Add(SharedStateDistribution& distribution)
 {
 
 	// testing code
@@ -50,7 +50,7 @@ void SimpleBuilder::AddMessage(SharedStateDistribution& distribution)
 
 }
 
-std::string SimpleBuilder::GetMessage(int framestamp)
+std::string SimpleBuilder::Get(int framestamp)
 {
 	// testing code
 	if (message.compare("") == 0)

@@ -207,9 +207,9 @@ void SharedStateDistributor::FlushDistribution()
 		for (unsigned int j = 0; j < consumers[i]->sharedStateCache.size(); ++j)
 		{
 			if (consumers[i]->sharedStateCache[j]->toBeDistributed)
-				builder.AddMessage(*consumers[i]->sharedStateCache[j]);
+				builder.Add(*consumers[i]->sharedStateCache[j]);
 		}
-		std::string finalMessage = builder.GetMessage(currentFrame);
+		std::string finalMessage = builder.Get(currentFrame);
 		if (finalMessage.compare("") != 0)
 		{
 			MessageDispatchController& dispatchController = MessageDispatchController::GetInstance();

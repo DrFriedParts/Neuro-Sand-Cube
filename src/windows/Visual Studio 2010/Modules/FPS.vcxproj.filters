@@ -207,13 +207,13 @@
     <ClCompile Include="..\..\..\NSC\Networking.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\NSC\TCPDispatcher.cpp">
-      <Filter>NSC</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\NSC\MessageBuilder.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\NSC\MessageBuilderFactory.cpp">
+      <Filter>NSC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\NSC\MessageDispatcher.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
   </ItemGroup>
@@ -352,9 +352,6 @@
       <Filter>NSC</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\NSC\Networking.h">
-      <Filter>NSC</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\NSC\TCPDispatcher.h">
       <Filter>NSC</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\NSC\MessageBuilder.h">

@@ -8,9 +8,37 @@
 
 using boost::asio::ip::tcp;
 
+class NetworkPort
+{
+public:
+	NetworkPort() :
+		m_bConnected(false),
+		m_bConnecting(false) { };
+
+	~NetworkPort() { };
+
+	virtual void Init() = 0; 
+	virtual void Connect()= 0;
+	virtual void Close()= 0;
+	virtual void Send(std::string)= 0;
+
+	static void Update() { m_IOService.poll(); m_IOService.reset(); }// this will probably be moved somehwere to some network manager or something - just getting by
+
+protected:
+	
+	static boost::asio::io_service m_IOService;
+	
+	bool m_bConnected;
+	bool m_bConnecting;
+
+	
+	std::string m_sMessage;
+
+};
+
 // basic networking classes used for transmission of plain text messages over tcp
 
-class TCPClient
+class TCPClient : public NetworkPort
 {
 public:
 	TCPClient(std::string ip, std::string port);
@@ -21,9 +49,7 @@ public:
 	void Close();
 	void Send(std::string);
 
-	static void Update() { m_IOService.poll(); m_IOService.reset(); }// this will probably be moved somehwere to some network manager or something - just getting by
-
-private:
+protected:
 	void _ConnectHandler(const boost::system::error_code& errorCode);
 
 	void _SendHeader();
@@ -37,7 +63,6 @@ private:
 	void _ResolveAddressHandler(const boost::system::error_code& err, tcp::resolver::iterator endpoint_iterator);	
 
 
-	static boost::asio::io_service m_IOService;
 	tcp::socket m_Socket;
 
 	tcp::resolver::iterator m_EndPointIteratorBegin;
@@ -46,10 +71,42 @@ private:
 	std::string m_sAddress;
 	std::string m_sPort;
 	
-	bool m_bConnected;
-	bool m_bConnecting;
 	bool m_bAddressResolved;
-	std::string m_sMessage;
+
+};
+
+enum SerialPort_Parity
+{
+	SP_PARITY_NONE,
+	SP_PARITY_ODD,
+	SP_PARITY_EVEN
+};
+
+class SerialPort: public NetworkPort
+{
+public:
+	SerialPort(std::string port, int iBaudRate, SerialPort_Parity eParity, int iDataBits, float fStopBits );
+	~SerialPort();
+
+	void Init(); 
+	void Connect();
+	void Close();
+	void Send(std::string);
+
+protected:
+
+	void _Send();
+	void _SendHandler(const boost::system::error_code& errorCode);
+	void _CloseConnection();
+
+	boost::asio::serial_port m_Port;
+	
+	std::string m_sPort;
+
+	int m_iBaudRate;
+	SerialPort_Parity m_eParity;
+	float m_fStopBits;
+	int m_iDataBits;
 
 };
 

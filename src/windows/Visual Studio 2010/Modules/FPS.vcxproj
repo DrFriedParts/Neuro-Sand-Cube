@@ -141,12 +141,12 @@
     <ClCompile Include="..\..\..\fpsgame\weapon.cpp" />
     <ClCompile Include="..\..\..\NSC\ConfigReader.cpp" />
     <ClCompile Include="..\..\..\NSC\MessageDispatchController.cpp" />
+    <ClCompile Include="..\..\..\NSC\MessageDispatcher.cpp" />
     <ClCompile Include="..\..\..\NSC\Networking.cpp" />
     <ClCompile Include="..\..\..\NSC\NeuroSandCube.cpp" />
     <ClCompile Include="..\..\..\NSC\SharedStateDistributor.cpp" />
     <ClCompile Include="..\..\..\NSC\MessageBuilder.cpp" />
     <ClCompile Include="..\..\..\NSC\MessageBuilderFactory.cpp" />
-    <ClCompile Include="..\..\..\NSC\TCPDispatcher.cpp" />
     <ClCompile Include="..\..\..\shared\crypto.cpp" />
     <ClCompile Include="..\..\..\shared\geom.cpp" />
     <ClCompile Include="..\..\..\shared\stream.cpp" />
@@ -204,7 +204,6 @@
     <ClInclude Include="..\..\..\NSC\SharedStateDistributor.h" />
     <ClInclude Include="..\..\..\NSC\MessageBuilder.h" />
     <ClInclude Include="..\..\..\NSC\MessageBuilderFactory.h" />
-    <ClInclude Include="..\..\..\NSC\TCPDispatcher.h" />
     <ClInclude Include="..\..\..\simplejson\JSON.h" />
     <ClInclude Include="..\..\..\simplejson\JSONValue.h" />
     <CustomBuild Include="..\..\..\fpsgame\game.h">
