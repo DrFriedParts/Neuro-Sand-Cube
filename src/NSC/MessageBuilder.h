@@ -2,12 +2,9 @@
 
 #include "SharedStateDistributor.h"
 
-// for now this will construct messages directly 
-// shoudl perhaps make this more flexible, and abstract away
-// the message construction so it can be generated in any form
-// perhaps using a builder
-
-// make proper builder todo	
+// atm this class has two repsonsibilities - formatting the messages in JSON as well as formatting
+// the messages in our NSC format (ie, it knows that we send timestamps and framestamps etc)
+// perhaps seperate it from this?
 
 class MessageBuilder
 {
@@ -15,7 +12,10 @@ public:
     MessageBuilder(void);
 	virtual ~MessageBuilder(void);
 
-	virtual void Add(SharedStateDistribution& distribution) = 0;
+	//virtual void Add(SharedStateDistribution& distribution) = 0;
+	//template <typename T>
+	virtual void Add(std::string key, std::string value, bool str = false) = 0;
+
 	//virtual void Add(string key, string value
 	virtual std::string Get(int timestamp) = 0;
 
@@ -31,7 +31,8 @@ public:
 	SimpleBuilder();
 	virtual ~SimpleBuilder();
 
-	virtual void Add(SharedStateDistribution& distribution);
+	//virtual void Add(SharedStateDistribution& distribution);
+	void Add(std::string key, std::string value, bool str = false){};
 	virtual std::string Get(int framestamp);
 
 	std::string message;
@@ -44,8 +45,9 @@ public:
 	JSONBuilder();
 	virtual ~JSONBuilder();
 
-	virtual void Add(SharedStateDistribution& distribution);
+	//virtual void Add(SharedStateDistribution& distribution);
 	virtual std::string Get(int framestamp);
+	//template <typename T>
 	void Add(std::string key, std::string value, bool str = false);
 	std::string message;
 };

@@ -3,6 +3,8 @@
 SimpleBuilder MessageBuilderFactory::m_simpleBuilder; 
 JSONBuilder MessageBuilderFactory::m_JSONBuilder; 
 
+// now this is what you call a useless factory.  It MAY be necessary
+// in near future. if not remove TODO
 
 MessageBuilderFactory::MessageBuilderFactory(void)
 {

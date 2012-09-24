@@ -34,7 +34,7 @@ SimpleBuilder::~SimpleBuilder()
 {
 
 }
-
+/*
 void SimpleBuilder::Add(SharedStateDistribution& distribution)
 {
 
@@ -48,7 +48,7 @@ void SimpleBuilder::Add(SharedStateDistribution& distribution)
 	std::string s(ss.str());
 	message.append(s);
 
-}
+}*/
 
 std::string SimpleBuilder::Get(int framestamp)
 {
@@ -78,6 +78,7 @@ JSONBuilder::~JSONBuilder()
 
 }
 
+/*
 void JSONBuilder::Add(SharedStateDistribution& distribution)
 {
 
@@ -91,18 +92,19 @@ void JSONBuilder::Add(SharedStateDistribution& distribution)
 	std::string s(ss.str());
 
 	Add(distribution.attributes.id, s);	
-}
+}*/
+
 
 void JSONBuilder::Add(std::string key, std::string value, bool str)
 {
 	std::ostringstream ss;
-	ss << "{ " << "\"id\": " << "\"" << key << "\", \"value\": " ;
+	ss << "{ \n" << "\"id\": " << "\"" << key << "\",\n \"value\": " ;
 
 	if (str)
 		ss << "\"" << value << "\" ";
 	else
 		ss << value << " ";
-	ss << " }, ";
+	ss << " \n}, ";
 
 	std::string s(ss.str());
 	message.append(s);
@@ -116,13 +118,16 @@ std::string JSONBuilder::Get(int framestamp)
 
 	boost::posix_time::ptime t(boost::posix_time::microsec_clock::local_time());
 	std::ostringstream ss;
+	
 	ss << t.time_of_day();
 	std::string s(ss.str());
-	Add("timestamp",s,true);
-	ss.clear();
+
+
+	Add("timestamp",s.substr(0,s.length() - 3),true); // leave out the last 3 - microseconds not necessary - i think ??
+	ss = std::ostringstream();
 	ss << framestamp;
 	std::string s2(ss.str());
-	Add("frame", s2,true);
+	Add("frame", s2);
 
 	ss = std::ostringstream();
 	ss << "[ " << message << " ]";

@@ -10,10 +10,9 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/variant.hpp>
-//#include <boost/function.hpp>
 
 
-typedef boost::variant<int, float, bool> SharedState;
+typedef boost::variant<int, float, bool> SharedState;				// shared states can be int, float, or bool. others can be added but this is fine for now
 typedef std::function<SharedState ()> SharedStateFunctor;
 
 
@@ -77,18 +76,30 @@ public:
 
 };
 
+class SharedState_tostring : public boost::static_visitor< std::string > //hax
+{
+public:
+
+	template <typename T>
+    std::string operator()( const T & t) const
+    {
+		std::ostringstream ss;
+		ss << t;
+		return std::string(ss.str());
+    }
+
+};
+
 struct SharedStateDistribution
 {
 	SharedStateAttributes attributes;
-
-	//boost::shared_ptr<SharedState> data;
 
 	SharedStateFunctor valueFunction;
 
 	SharedState value; 
 	SharedState prevValue; 
 	SharedState delta;
-	// vars
+	
 	int numChanges; // number of time value has changed
 	int framesPassedSinceDistribution;
 
@@ -112,33 +123,22 @@ public:
 	SharedStateDistributor(void);
 	~SharedStateDistributor(void);
 
-	void AddSharedState(SharedState, std::string id);
 	void AddSharedState(std::string id, SharedStateFunctor);
-
 	bool AddDistribution(SharedStateAttributes attributes);
-
 	void Distribute(); // this should be called every frame.
 	
 private:
-	//boost::shared_ptr<SharedState> FindSharedState(std::string stateID);
-	SharedStateFunctor* FindSharedStateFunctor(std::string stateID);
-	void SharedStateDistributor::AddDistributionMessage(boost::shared_ptr<SharedStateDistribution> distribution);
-	void AddConsumerDistribution(std::string id, boost::shared_ptr<SharedStateDistribution> distribution);
+
 	void AddConsumerDistribution(boost::shared_ptr<SharedStateDistribution> distribution);
-
-	void ClearDistributionCache();
-
 	void FlushDistribution();
 
 	//std::vector<boost::shared_ptr<SharedState> > sharedStates; // 
 
 	std::vector<boost::shared_ptr<SharedStateDistribution> > distributions;
-
 	std::vector<boost::shared_ptr<ConsumerDistributionCache> > consumers;
-
 	std::map<std::string, SharedStateFunctor > sharedStates;
 
-	int currentFrame;		// this is not the game frames, but the frames since the distributor was started. 
+	int currentFrame;		// frames since the distributor was started. 
 };
 
 #endif
