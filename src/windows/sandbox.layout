@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="All" />
+	<File name="..\3rdparty\SimpleJSON\JSON.cpp" open="1" top="0" tabpos="12">
+		<Cursor position="1116" topLine="0" />
+	</File>
+	<File name="..\3rdparty\SimpleJSON\JSON.h" open="1" top="0" tabpos="9">
+		<Cursor position="1477" topLine="16" />
+	</File>
+	<File name="..\3rdparty\SimpleJSON\JSONValue.cpp" open="1" top="0" tabpos="11">
+		<Cursor position="1172" topLine="10" />
+	</File>
+	<File name="..\3rdparty\SimpleJSON\JSONValue.h" open="1" top="0" tabpos="10">
+		<Cursor position="2258" topLine="48" />
+	</File>
+	<File name="..\enet\include\enet\enet.h" open="1" top="0" tabpos="4">
+		<Cursor position="16701" topLine="0" />
+	</File>
+	<File name="..\engine\client.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="5711" topLine="194" />
+	</File>
+	<File name="..\engine\console.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="18828" topLine="580" />
+	</File>
+	<File name="..\engine\engine.h" open="1" top="0" tabpos="8">
+		<Cursor position="89" topLine="144" />
+	</File>
+	<File name="..\engine\main.cpp" open="1" top="0" tabpos="3">
+		<Cursor position="116" topLine="0" />
+	</File>
+	<File name="..\engine\physics.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="63918" topLine="1853" />
+	</File>
+	<File name="..\fpsgame\client.cpp" open="1" top="0" tabpos="1">
+		<Cursor position="5499" topLine="147" />
+	</File>
+	<File name="..\fpsgame\fps.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="19" topLine="0" />
+	</File>
+	<File name="..\fpsgame\game.h" open="1" top="0" tabpos="6">
+		<Cursor position="142" topLine="0" />
+	</File>
+	<File name="..\fpsgame\weapon.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="18446" topLine="539" />
+	</File>
+	<File name="..\include\SDL_stdinc.h" open="1" top="0" tabpos="18">
+		<Cursor position="6066" topLine="195" />
+	</File>
+	<File name="..\shared\cube.h" open="1" top="0" tabpos="15">
+		<Cursor position="249" topLine="0" />
+	</File>
+	<File name="..\shared\geom.h" open="1" top="0" tabpos="16">
+		<Cursor position="1800" topLine="26" />
+	</File>
+	<File name="..\shared\tools.cpp" open="1" top="0" tabpos="14">
+		<Cursor position="435" topLine="0" />
+	</File>
+	<File name="..\shared\tools.h" open="1" top="1" tabpos="13">
+		<Cursor position="727" topLine="0" />
+	</File>
+</CodeBlocks_layout_file>
