@@ -90,8 +90,17 @@ The right mouse button has been clicked! Sends both press (value = 1) and releas
 
 ## level_restart
 
-The level has been loaded. Value = -2
+The level has been loaded. Value = 1
 
 ### Properties
 
 * id -- ```level_restart```
+
+## teleport
+
+The mouse has teleported. Value = 1
+
+### Properties
+
+* id -- ```teleport```
+

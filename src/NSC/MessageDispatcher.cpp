@@ -1,21 +1,16 @@
 #include "MessageDispatcher.h"
-#include "Logger.h"
 
 #include <sstream>
 #include <algorithm>
 #include <ctype.h>
 #include <boost/foreach.hpp>
-
+#include "EZLogger.h"
 
 
 MessageDispatcher::MessageDispatcher(std::string description)
 {
 	// instantiates appropriate network port based on device description
 	// if its a com address -> serial port
-
-	Logger& logger = Logger::GetInstance();
-
-	
 
 	std::transform(description.begin(), description.end(),description.begin(), ::toupper);
 	std::istringstream oss(description);
@@ -69,8 +64,7 @@ MessageDispatcher::MessageDispatcher(std::string description)
 		if (iBaudRate == 0 || iDataBits == 0 || fStopBits == 0.0f)
 		{
 			//FAIL
-			logger.Log(description);
-			logger.Log(": Failed to initialize serial Port. Check parameters");
+			EZLOGGERVLSTREAM(axter::log_always) << "Failed to initialize serial port - " << description <<". Incorrect format specified!"<< std::endl;
 		}
 
 		m_spPort = boost::shared_ptr<SerialPort>(new SerialPort(address,iBaudRate,eParity,iDataBits,fStopBits));
@@ -78,7 +72,7 @@ MessageDispatcher::MessageDispatcher(std::string description)
 	else
 	{
 		//network socket
-		m_spPort = boost::shared_ptr<TCPClient>(new TCPClient(address,rest));
+//		m_spPort = boost::shared_ptr<TCPClient>(new TCPClient(address,rest));
 	}
 
 	
