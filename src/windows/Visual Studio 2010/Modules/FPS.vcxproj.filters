@@ -219,9 +219,6 @@
     <ClCompile Include="..\..\..\NSC\MessageDispatcher.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\NSC\Logger.cpp">
-      <Filter>NSC</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\fpsgame\ai.h">
@@ -243,9 +240,6 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\shared\cube.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\shared\ents.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\shared\geom.h">
@@ -366,9 +360,6 @@
     <ClInclude Include="..\..\..\NSC\MessageBuilderFactory.h">
       <Filter>NSC</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\NSC\Logger.h">
-      <Filter>NSC</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\ezlogger\ezlogger_macros.hpp">
       <Filter>3rdParty\EZLogger</Filter>
     </ClInclude>
@@ -389,6 +380,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\ezlogger\ezlogger_headers.hpp">
       <Filter>3rdParty\EZLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\shared\ents.h">
+      <Filter>Engine\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\NSC\EZLogger.h">
+      <Filter>NSC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

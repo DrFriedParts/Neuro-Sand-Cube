@@ -1,6 +1,5 @@
 #include "NeuroSandCube.h"
-
-#include "Logger.h"
+#include "EZLogger.h"
 #include "ConfigReader.h"
 #include "MessageDispatchController.h"
 #include "MessageDispatcher.h"
@@ -109,8 +108,7 @@ void NeuroSandCube::Initialize(fpsent* player)
 		}
 		else
 		{
-			
-			Logger::GetInstance().Log("Attempting to add distribution of unsuported state!");
+			EZLOGGERVLSTREAM(axter::log_always) << "Attempting to add distribution of unsuported state - " << attributes->id <<"!"<< std::endl;
 		}
 		attributes = configReader.Get(++i);
 

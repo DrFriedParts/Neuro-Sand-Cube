@@ -1,5 +1,4 @@
 #include "Networking.h"
-#include "Logger.h"
 #include <sstream>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "../ezlogger/ezlogger_headers.hpp"
@@ -228,8 +227,7 @@ void SerialPort::Connect()
 	
 		if (!m_Port.is_open())
 		{
-			Logger::GetInstance().Log(m_sPort);
-			Logger::GetInstance().Log("Failed to open serial port!");
+			EZLOGGERVLSTREAM(axter::log_always) << "Failed to open serial port - " << m_sPort <<"!"<< std::endl;
 		}
 
 		m_bConnected = true;
@@ -357,6 +355,7 @@ void TCPServer::Send(std::string description, std::string message)
 void TCPConnection::Init() 
 {
 	m_bConnected = true;
+	m_sAddress = GetAddres();
 }
 
 void TCPConnection::Connect()
@@ -430,8 +429,7 @@ void TCPConnection::_SendHandler(const boost::system::error_code& errorCode)
 	}
 	else
 	{
-		// log error
-		// check type and maybe try again? for now, just close
+		EZLOGGERVLSTREAM(axter::log_rarely) << "Transmission of message failed! " << m_sAddress << ":" <<  m_sPort <<  std::endl;
 		_CloseConnection();
 	}
 }
