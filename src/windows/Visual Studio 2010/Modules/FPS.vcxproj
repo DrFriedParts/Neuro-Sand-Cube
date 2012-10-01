@@ -52,7 +52,7 @@
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <AdditionalIncludeDirectories>..\..\..\shared;..\..\..\include;..\..\..\enet\include;..\..\..\fpsgame;..\..\..\engine;..\..\..\boost_1.51_0_subset;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32; __MSVC__;DEBUG;%(PreprocessorDefinitions);DEBUGPOS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;__MSVC__;DEBUG;%(PreprocessorDefinitions);DEBUGPOS;_WIN32_WINNT=0x0501</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -192,6 +192,13 @@
     <ClCompile Include="..\..\..\simplejson\JSONValue.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\ezlogger\ezlogger.hpp" />
+    <ClInclude Include="..\..\..\ezlogger\ezlogger_format_policy.hpp" />
+    <ClInclude Include="..\..\..\ezlogger\ezlogger_headers.hpp" />
+    <ClInclude Include="..\..\..\ezlogger\ezlogger_macros.hpp" />
+    <ClInclude Include="..\..\..\ezlogger\ezlogger_misc.hpp" />
+    <ClInclude Include="..\..\..\ezlogger\ezlogger_output_policy.hpp" />
+    <ClInclude Include="..\..\..\ezlogger\ezlogger_verbosity_level_policy.hpp" />
     <ClInclude Include="..\..\..\fpsgame\ai.h" />
     <ClInclude Include="..\..\..\fpsgame\aiman.h" />
     <ClInclude Include="..\..\..\fpsgame\capture.h" />

@@ -2,10 +2,13 @@
 #include "Logger.h"
 #include <sstream>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include "../ezlogger/ezlogger_headers.hpp"
 
-boost::asio::io_service TCPClient::m_IOService;
+boost::asio::io_service NetworkPort::m_IOService;
 
-TCPClient::TCPClient(std::string address, std::string port) :
+//boost::asio::io_service TCPServer::m_IOService;
+
+/*TCPClient::TCPClient(std::string address, std::string port) :
 	m_Socket(m_IOService), 
 	m_bAddressResolved(false),
 	m_sAddress(address),
@@ -68,6 +71,7 @@ void TCPClient::_ResolveAddressHandler(const boost::system::error_code& errorCod
 	else
 	{
 		m_bAddressResolved = false;	
+		EZLOGGERVLSTREAM(axter::log_rarely) << "Transmission of message header failed! " << m_sAddress << ":" <<  m_sPort <<  std::endl;
 	}
 }
 
@@ -94,10 +98,8 @@ void TCPClient::_ConnectHandler(const boost::system::error_code& errorCode)
 		// connection successful
 		m_bConnected = true;
 
-		Logger::GetInstance().Log(m_sAddress,Logger::LOG_INFO);
-		Logger::GetInstance().Log("Connected successfully.",Logger::LOG_INFO);
-
-
+		EZLOGGERVLSTREAM(axter::log_always) << "Connected successfully " << m_sAddress << ":" <<  m_sPort <<  std::endl;
+	
 	}
 	else if (m_EndPointIterator != tcp::resolver::iterator())
 	{
@@ -108,10 +110,8 @@ void TCPClient::_ConnectHandler(const boost::system::error_code& errorCode)
 	else
 	{
 		m_Socket.close();
-		std::cout << errorCode.value() << std::endl; 
-		std::cout << errorCode.category().name() << std::endl; 
-		// failed to connect
 
+		EZLOGGERVLSTREAM(axter::log_always) << "Failed to open network socket " << m_sAddress << ":" <<  m_sPort <<  "(" ;//<< errorCode.value() << ", " << errorCode.category().name() << ") "<< std::endl;
 	}
 		
 }
@@ -170,8 +170,7 @@ void TCPClient::_SendHeaderHandler(const boost::system::error_code& errorCode)
 	}
 	else
 	{
-		Logger::GetInstance().Log(m_sAddress);
-		Logger::GetInstance().Log("Transmission of message header failed!");
+		EZLOGGERVLSTREAM(axter::log_rarely) << "Transmission of message header failed! " << m_sAddress << ":" <<  m_sPort <<  std::endl;
 		_CloseConnection();
 	}
 }
@@ -196,7 +195,7 @@ void TCPClient::_SendHandler(const boost::system::error_code& errorCode)
 		_CloseConnection();
 	}
 }
-
+*/
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///
@@ -256,8 +255,7 @@ void SerialPort::Connect()
 	{
 		m_bConnected = false;
 
-		Logger::GetInstance().Log(m_sPort);
-		Logger::GetInstance().Log("Failed to open serial port!");
+		EZLOGGERVLSTREAM(axter::log_always) << "Failed to open serial port " << m_sPort <<  std::endl;
 	}
 }
 
@@ -308,8 +306,140 @@ void SerialPort::_SendHandler(const boost::system::error_code& errorCode)
 	}
 	else
 	{
-		Logger::GetInstance().Log(m_sPort);
-		Logger::GetInstance().Log("Transmission of message failed!");
+		EZLOGGERVLSTREAM(axter::log_rarely) << "Transmission of message failed!" << m_sPort <<  std::endl;
 		_CloseConnection();
 	}
+}
+
+///////////////////////////////////////////////////////////////
+/// TCP Server
+
+void TCPServer::Init()
+{
+	//m_IOService = NetworkPort::m_IOService;
+	auto connection = boost::shared_ptr<TCPConnection>(new TCPConnection(m_IOService));
+	m_Acceptor.async_accept(connection->GetSocket(),
+        boost::bind(&TCPServer::_HandleAccept, this, connection,
+          boost::asio::placeholders::error));
+}
+
+
+void TCPServer::_HandleAccept(boost::shared_ptr<TCPConnection> connection,const boost::system::error_code& error)
+{
+	if (!error)
+	{
+		connection->Init();
+
+		std::string s = connection->GetAddres();
+		m_Connections[s] = connection;
+
+		// add to our list of connection
+	}
+	else
+	{
+		// something went wrong in accepting the connection
+		EZLOGGERVLSTREAM(axter::log_always) << "Connection attempt failed! " <<  std::endl;
+	}
+}
+
+void TCPServer::Send(std::string description, std::string message)
+{
+	auto iterator = m_Connections.find(description);
+
+	if (iterator != m_Connections.end())
+		iterator->second->Send(message);
+	
+}
+
+///////////////////////////////////////////////////////////////
+/// TCP Connection
+
+void TCPConnection::Init() 
+{
+	m_bConnected = true;
+}
+
+void TCPConnection::Connect()
+{
+
+}
+
+void TCPConnection::Close()
+{
+
+}
+
+std::string TCPConnection::GetAddres()
+{
+	if (m_bConnected)
+		return m_Socket.remote_endpoint().address().to_string();
+	else return std::string();
+}
+
+void TCPConnection::Send(std::string message)
+{
+	if (m_bConnected)
+	{
+		m_sMessage = message;
+		//_SendHeader();
+		_Send();
+	}
+	else
+	{
+	
+	}
+	
+}
+
+void TCPConnection::_SendHeader()
+{
+	std::ostringstream ss;
+	ss.width(4);
+	ss.fill('0');
+	ss <<  m_sMessage.length();
+	std::string s(ss.str());
+	const char*  c = s.c_str();
+	boost::asio::async_write(m_Socket, boost::asio::buffer(c,4), boost::bind(&TCPConnection::_SendHeaderHandler,shared_from_this(), boost::asio::placeholders::error));
+}
+
+void TCPConnection::_SendHeaderHandler(const boost::system::error_code& errorCode)
+{
+	if (errorCode == 0)
+	{
+		_Send();
+	}
+	else
+	{
+		EZLOGGERVLSTREAM(axter::log_rarely) << "Transmission of message header failed! " << m_sAddress << ":" <<  m_sPort <<  std::endl;
+		_CloseConnection();
+	}
+}
+
+void TCPConnection::_Send()
+{
+	boost::asio::async_write(m_Socket, boost::asio::buffer(m_sMessage), boost::bind(&TCPConnection::_SendHandler,shared_from_this(), boost::asio::placeholders::error));
+}
+
+
+
+void TCPConnection::_SendHandler(const boost::system::error_code& errorCode)
+{
+	if (errorCode == 0)
+	{
+
+	}
+	else
+	{
+		// log error
+		// check type and maybe try again? for now, just close
+		_CloseConnection();
+	}
+}
+
+void TCPConnection::_CloseConnection()
+{
+	m_Socket.close();
+	m_bConnected = false;
+	//m_bAddressResolved = false;	
+	m_bConnecting = false;
 }

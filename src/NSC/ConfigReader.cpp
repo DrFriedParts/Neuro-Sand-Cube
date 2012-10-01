@@ -1,7 +1,7 @@
 #include "ConfigReader.h"
 #include "SharedStateDistributor.h"
 
-#include "Logger.h"
+//#include "../ezlogger/ezlogger_headers.hpp"
 
 
 
@@ -25,15 +25,13 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 	std::string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 	
 	JSONValue *value = JSON::Parse(str.c_str());
-
-	Logger& logger = Logger::GetInstance();
 	
 	if (value != NULL)
 	{
 		JSONArray root;
 		if (value->IsArray() == false)
 		{
-			logger.Log(std::string("The root element is not an array, Incorrect format.\r\n"));
+			///EZLOGGERVLSTREAM(axter::log_always) << "The root element is not an array, Incorrect format." <<  std::endl;
 		}
 		else
 		{
@@ -42,7 +40,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 			{	
 				if (!root[i]->IsObject())
 				{
-					logger.Log("Array element: Object expected.\r\n");
+					//EZLOGGERVLSTREAM(axter::log_always) << "Array element: Object expected." <<  std::endl;
 				}
 				else
 				{
@@ -58,7 +56,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 						}
 						else
 						{
-							logger.Log("'id' : String expected.\r\n");	
+							//EZLOGGERVLSTREAM(axter::log_always) << "'id' : String expected." <<  std::endl;
 							delete value;
 							return;
 						}
@@ -75,7 +73,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 							{
 								if (!consumerArray[j]->IsString())
 								{
-									logger.Log("'consumers' element : String expected.\r\n");	
+									//EZLOGGERVLSTREAM(axter::log_always) << "'consumers' element : String expected." <<  std::endl;
 									delete value;
 									return;
 								}
@@ -87,7 +85,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 						}
 						else
 						{
-							logger.Log("'consumers' : Array expected.\r\n");		
+							//EZLOGGERVLSTREAM(axter::log_always) << "'consumers' : Array expected." <<  std::endl;
 							delete value;
 							return;
 						}
@@ -99,7 +97,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 							attributes->onlyOnChange = object[L"only_on_change"]->AsBool();
 						else
 						{
-							logger.Log("'only_on_change' : Bool expected.\r\n");		
+							//EZLOGGERVLSTREAM(axter::log_always) << "'only_on_change' : Bool expected." <<  std::endl;
 							delete value;
 							return;
 						}
@@ -111,7 +109,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 							attributes->resetOnRestart = object[L"reset_counter_on_restart"]->AsBool();
 						else
 						{
-							logger.Log("'reset_counter_on_restart' : Bool expected.\r\n");	
+							//EZLOGGERVLSTREAM(axter::log_always) << "'reset_counter_on_restart' : Bool expected." <<  std::endl;
 							delete value;
 							return;
 						}
@@ -124,7 +122,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 							attributes->interval = object[L"interval"]->AsNumber();
 						else
 						{
-							logger.Log("'interval' : Number expected.\r\n");	
+							//EZLOGGERVLSTREAM(axter::log_always) << "'interval' : Number expected." <<  std::endl;
 							delete value;
 							return;
 						}
@@ -137,7 +135,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 							attributes->delta = object[L"delta"]->AsBool();
 						else
 						{
-							logger.Log("'delta' : Bool expected.\r\n");		
+							//EZLOGGERVLSTREAM(axter::log_always) << "'delta' : Bool expected." <<  std::endl;
 							delete value;
 							return;
 						}
@@ -153,7 +151,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 	}
 	else 
 	{
-		logger.Log("Failed to parse config file\r\n");
+		//EZLOGGERVLSTREAM(axter::log_always) << "Failed to parse config file." <<  std::endl;
 	}
 }
 

@@ -96,8 +96,13 @@ void NeuroSandCube::Initialize(fpsent* player)
 
 				if (!dispatchController.HasDispatcher(consumer))
 				{
-					auto dispatcher = boost::shared_ptr<MessageDispatcher>(new MessageDispatcher(consumer));
-					dispatchController.AddDispatcher(consumer,dispatcher);
+				
+					std::string sub = consumer.substr(0,3);
+					if (sub.compare(std::string("COM")) == 0)
+					{
+						auto dispatcher = boost::shared_ptr<MessageDispatcher>(new MessageDispatcher(consumer));
+						dispatchController.AddDispatcher(consumer,dispatcher);
+					}
 				}
 			}
 

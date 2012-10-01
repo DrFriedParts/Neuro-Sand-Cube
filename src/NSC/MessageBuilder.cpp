@@ -98,13 +98,16 @@ void JSONBuilder::Add(SharedStateDistribution& distribution)
 void JSONBuilder::Add(std::string key, std::string value, bool str)
 {
 	std::ostringstream ss;
-	ss << "{ \n" << "\"id\": " << "\"" << key << "\",\n \"value\": " ;
+	if (message.compare("") != 0)
+		ss << ", ";
+
+	ss << "{ " << "\"id\": " << "\"" << key << "\", \"value\": " ;
 
 	if (str)
 		ss << "\"" << value << "\" ";
 	else
 		ss << value << " ";
-	ss << " \n}, ";
+	ss << " }";
 
 	std::string s(ss.str());
 	message.append(s);

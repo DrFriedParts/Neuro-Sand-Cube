@@ -78,7 +78,7 @@ MessageDispatcher::MessageDispatcher(std::string description)
 	else
 	{
 		//network socket
-		m_spPort = boost::shared_ptr<TCPClient>(new TCPClient(address,rest));
+//		m_spPort = boost::shared_ptr<TCPClient>(new TCPClient(address,rest));
 	}
 
 	
