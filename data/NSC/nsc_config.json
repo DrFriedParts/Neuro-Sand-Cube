@@ -1,16 +1,9 @@
 [   
     {
-     "id":"player_left_click", 
-     "consumers":["COM5:115200N81"],
-     "only_on_change":true, 
-     "reset_counter_on_restart":true, 
-     "interval":0 
-    },
-    {
      "id":"level_restart", 
      "consumers":["COM5:115200N81"],
      "only_on_change":true, 
      "reset_counter_on_restart":false, 
      "interval":0 
-    }
+    }	
 ]
