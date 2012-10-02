@@ -15,6 +15,7 @@ public:
 	//virtual void Add(SharedStateDistribution& distribution) = 0;
 	//template <typename T>
 	virtual void Add(std::string key, std::string value, bool str = false) = 0;
+	virtual void Add(std::string key, std::string value, int numChanges) {};
 
 	//virtual void Add(string key, string value
 	virtual std::string Get(int timestamp) = 0;
@@ -49,6 +50,7 @@ public:
 	virtual std::string Get(int framestamp);
 	//template <typename T>
 	void Add(std::string key, std::string value, bool str = false);
+	void Add(std::string key, std::string value, int numChanges);
 	std::string message;
 };
 

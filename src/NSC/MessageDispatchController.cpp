@@ -1,6 +1,6 @@
 #include "MessageDispatchController.h"
 
-#include "TCPDispatcher.h"
+#include "MessageDispatcher.h"
 
 
 MessageDispatchController::MessageDispatchController(void)

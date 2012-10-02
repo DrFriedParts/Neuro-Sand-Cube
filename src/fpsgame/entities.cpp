@@ -299,6 +299,7 @@ namespace entities
                 }
                 d->lastpickup = ents[n]->type;
                 d->lastpickupmillis = lastmillis;
+				d->teleported = true;
                 teleport(n, d);
                 break;
             }

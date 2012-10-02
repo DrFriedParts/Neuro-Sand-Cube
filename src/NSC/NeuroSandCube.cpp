@@ -32,6 +32,10 @@ void NeuroSandCube::Initialize(fpsent* player)
 
 	// faced now with either extending sharedstates to have two modes of tracking - 
 
+	// init some vars
+
+	//player->levelRestart = true;
+
 	distributor.AddSharedState("player_x",
 	[player] ()
 	{
@@ -54,9 +58,16 @@ void NeuroSandCube::Initialize(fpsent* player)
 	);
 
 	distributor.AddSharedState("level_restart",
-	[player] ()
+	[player] () -> SharedState
 	{
-		return SharedState(player->respawned);
+
+		static int count = 0;
+		if (player->levelRestart)
+			count++;
+
+		static bool prevValue;
+		bool restart = (count > 1)? player->levelRestart : false;
+		return SharedState(restart);
 	}
 	);
 
@@ -71,6 +82,13 @@ void NeuroSandCube::Initialize(fpsent* player)
 	[player] ()
 	{
 		return SharedState( player->newpos.dist(player->startingPosition));
+	}
+	);
+
+	distributor.AddSharedState("teleport",
+	[player] () -> SharedState
+	{
+		return SharedState(player->teleported);
 	}
 	);
 
@@ -105,7 +123,7 @@ void NeuroSandCube::Initialize(fpsent* player)
 		else
 		{
 			
-			Logger::GetInstance().Log("Attempting to add distribution of unsuported state!");
+			Logger::GetInstance().Log("Attempting to add distribution of unsupported state!");
 		}
 		attributes = configReader.Get(++i);
 
@@ -116,6 +134,17 @@ void NeuroSandCube::Initialize(fpsent* player)
 
 void NeuroSandCube::Update()
 {
+	if (player->levelRestart)
+		distributor.LevelReset();
 	distributor.Distribute();
 	NetworkPort::Update();
+	ResetFrame();
+
+	
+}
+
+void NeuroSandCube::ResetFrame()
+{
+	player->levelRestart = false;
+	player->teleported = false;
 }

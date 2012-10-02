@@ -12,6 +12,8 @@ public:
 	void Initialize(fpsent* player);
 	void Update();
 
+	void ResetFrame();		
+
 private:
 
 	SharedStateDistributor distributor;

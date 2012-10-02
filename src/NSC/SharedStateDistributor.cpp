@@ -139,9 +139,12 @@ void SharedStateDistributor::FlushDistribution()
 			if (sharedStateCache->toBeDistributed)
 			{
 				if (sharedStateCache->attributes.delta)
-					builder.Add(sharedStateCache->attributes.id,boost::apply_visitor(SharedState_tostring(), sharedStateCache->delta));
+					builder.Add(sharedStateCache->attributes.id,boost::apply_visitor(SharedState_tostring(), sharedStateCache->delta),sharedStateCache->numChanges);
 				else
-					builder.Add(sharedStateCache->attributes.id,boost::apply_visitor(SharedState_tostring(), sharedStateCache->value));
+					builder.Add(sharedStateCache->attributes.id,boost::apply_visitor(SharedState_tostring(), sharedStateCache->value),sharedStateCache->numChanges);
+
+				
+				
 			}
 		}
 		std::string finalMessage = builder.Get(currentFrame);
@@ -153,4 +156,15 @@ void SharedStateDistributor::FlushDistribution()
 
 	}
 
+}
+
+void SharedStateDistributor::LevelReset()
+{
+	for (unsigned int i =0; i < distributions.size(); ++i)
+	{
+		if (distributions[i]->attributes.resetOnRestart)
+		{
+			distributions[i]->numChanges = 0;
+		}
+	}
 }

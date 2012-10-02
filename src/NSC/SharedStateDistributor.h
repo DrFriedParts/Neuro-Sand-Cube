@@ -45,9 +45,9 @@ class SharedState_equals : public boost::static_visitor<bool>
 {
 public:
     template <typename T, typename U>
-    bool operator()( const T &, const U & ) const
+    bool operator()( const T &lhs, const U &rhs ) const
     {
-        return false; // cannot compare different types
+        return lhs == rhs; // cannot compare different types
     }
 
     template <typename T>
@@ -126,6 +126,8 @@ public:
 	void AddSharedState(std::string id, SharedStateFunctor);
 	bool AddDistribution(SharedStateAttributes attributes);
 	void Distribute(); // this should be called every frame.
+
+	void LevelReset();
 	
 private:
 

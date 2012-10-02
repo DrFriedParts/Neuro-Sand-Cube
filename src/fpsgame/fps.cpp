@@ -306,9 +306,7 @@ namespace game
         }
 
 
-		// DO NCS UPDATE HERE
-
-
+		// NSC
 		NSC::nsc.Update();
 
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
@@ -323,9 +321,15 @@ namespace game
         if(d==player1)
         {
             if(editmode) d->state = CS_EDITING;
-            else if(d->state != CS_SPECTATOR) d->state = CS_ALIVE;
+            else if(d->state != CS_SPECTATOR) 
+			{
+				d->state = CS_ALIVE;
+				// NSC functionality
+				d->levelRestart = true;
+			}
         }
         else d->state = CS_ALIVE;
+
     }
 
     VARP(spawnwait, 0, 0, 1000);
@@ -537,6 +541,8 @@ namespace game
     {
         player1 = spawnstate(new fpsent);
         players.add(player1);
+
+		NSC::nsc.Initialize(player1);
     }
 
     VARP(showmodeinfo, 0, 1, 1);
@@ -605,7 +611,7 @@ namespace game
 		// Init neuro sand cube
 
 		player1->startingPosition = player1->o;
-		NSC::nsc.Initialize(player1);
+		
 
     }
 

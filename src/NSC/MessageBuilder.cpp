@@ -98,13 +98,16 @@ void JSONBuilder::Add(SharedStateDistribution& distribution)
 void JSONBuilder::Add(std::string key, std::string value, bool str)
 {
 	std::ostringstream ss;
+	if (message.compare("") != 0)
+		ss << " ,";
+
 	ss << "{ \n" << "\"id\": " << "\"" << key << "\",\n \"value\": " ;
 
 	if (str)
 		ss << "\"" << value << "\" ";
 	else
 		ss << value << " ";
-	ss << " \n}, ";
+	ss << " \n} ";
 
 	std::string s(ss.str());
 	message.append(s);
@@ -138,4 +141,20 @@ std::string JSONBuilder::Get(int framestamp)
 	message.clear();
 
 	return finalMessage;
+}
+
+void JSONBuilder::Add(std::string key, std::string value, int numChanges)
+{
+	std::ostringstream ss;
+	if (message.compare("") != 0)
+		ss << " ,";
+	ss << "{ \n" << "\"id\": " << "\"" << key << "\",\n \"value\": " ;
+
+
+	ss << value << " ";
+	ss << ",\n \"change_count\": " << numChanges << " \n} ";
+
+	std::string s(ss.str());
+	message.append(s);
+
 }
