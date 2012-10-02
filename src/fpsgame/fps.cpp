@@ -5,7 +5,8 @@
 namespace NSC
 {
 
-	NeuroSandCube nsc;
+	boost::shared_ptr<NeuroSandCube> nsc;
+
 
 }
 
@@ -307,7 +308,7 @@ namespace game
 
 
 		// NSC
-		NSC::nsc.Update();
+		NSC::nsc->Update();
 
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
 
@@ -539,10 +540,11 @@ namespace game
 
     void initclient()
     {
+		NSC::nsc = boost::shared_ptr<NeuroSandCube>(new NeuroSandCube());
         player1 = spawnstate(new fpsent);
         players.add(player1);
 
-		NSC::nsc.Initialize(player1);
+		NSC::nsc->Initialize(player1);
     }
 
     VARP(showmodeinfo, 0, 1, 1);

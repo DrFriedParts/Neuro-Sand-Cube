@@ -3,7 +3,19 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "../ezlogger/ezlogger_headers.hpp"
 
-boost::asio::io_service NetworkPort::m_IOService;
+//boost::asio::io_service NetworkPort::m_IOService;
+//boost::asio::io_service g_IOService;
+boost::asio::io_service IOService::m_IOService;
+//boost::asio::io_service& NetworkPort::m_IOService = g_IOService;
+
+NetworkPort::NetworkPort() :
+m_IOService(),
+	m_bConnected(false),
+	m_bConnecting(false)
+{
+		
+};
+
 
 //boost::asio::io_service TCPServer::m_IOService;
 
@@ -203,7 +215,7 @@ void TCPClient::_SendHandler(const boost::system::error_code& errorCode)
 
 
 SerialPort::SerialPort(std::string port, int iBaudRate, SerialPort_Parity eParity, int iDataBits, float fStopBits ) :
-	m_Port(m_IOService), 
+	m_Port(m_IOService.m_IOService), 
 	m_sPort(port),
 	m_iBaudRate(iBaudRate),
 	m_eParity(eParity),
@@ -266,7 +278,7 @@ void SerialPort::Init()
 
 void SerialPort::Close()
 {
-	m_IOService.post(boost::bind(&SerialPort::_CloseConnection, this));
+	m_IOService.m_IOService.post(boost::bind(&SerialPort::_CloseConnection, this));
 }
 
 void SerialPort::_CloseConnection()
@@ -312,10 +324,23 @@ void SerialPort::_SendHandler(const boost::system::error_code& errorCode)
 ///////////////////////////////////////////////////////////////
 /// TCP Server
 
+TCPServer& TCPServer::GetInstance()
+{
+	static TCPServer instance(12345);
+	return instance;
+}
+
+TCPServer::TCPServer(/*boost::asio::io_service& IOService,*/ int port) : 
+	m_IOService(),
+	m_Acceptor(m_IOService.m_IOService, tcp::endpoint(tcp::v4(), port)) 
+{
+	Init();
+}
+
 void TCPServer::Init()
 {
 	//m_IOService = NetworkPort::m_IOService;
-	auto connection = boost::shared_ptr<TCPConnection>(new TCPConnection(m_IOService));
+	auto connection = boost::shared_ptr<TCPConnection>(new TCPConnection(/*m_IOService*/));
 	m_Acceptor.async_accept(connection->GetSocket(),
         boost::bind(&TCPServer::_HandleAccept, this, connection,
           boost::asio::placeholders::error));
@@ -351,6 +376,12 @@ void TCPServer::Send(std::string description, std::string message)
 
 ///////////////////////////////////////////////////////////////
 /// TCP Connection
+
+TCPConnection::TCPConnection(/*boost::asio::io_service& IOService*/) :
+m_bConnected(false),
+	m_bConnecting(false),
+	m_Socket(m_IOService.m_IOService)
+	/*m_IOService( IOService)*/ { };
 
 void TCPConnection::Init() 
 {

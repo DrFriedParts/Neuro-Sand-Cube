@@ -53,7 +53,7 @@ void MessageDispatchController::Send(std::string message, std::string destinatio
 	static int first = 0;
 	if (first == 0)
 	{
-		m_spServer = boost::shared_ptr<TCPServer>(new TCPServer(12345));
+		
 		++first;
 	}
 	
@@ -68,6 +68,7 @@ void MessageDispatchController::Send(std::string message, std::string destinatio
 		// log could not find service
 		
 		//TEMP!
-		m_spServer->Send(destination, message);
+		TCPServer::GetInstance().Send(destination, message);
+		//m_spServer->Send(destination, message);
 	}
 }

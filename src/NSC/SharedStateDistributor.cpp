@@ -8,6 +8,7 @@
 
 SharedStateDistributor::SharedStateDistributor(void) : currentFrame(0)
 {
+	
 }
 
 

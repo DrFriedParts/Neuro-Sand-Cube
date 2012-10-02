@@ -11,12 +11,28 @@
 
 using boost::asio::ip::tcp;
 
+class IOService
+{
+public:
+	IOService()  
+	{
+		
+	};
+	~IOService() { };
+
+	static void Update() { m_IOService.poll(); m_IOService.reset(); }// this will probably be moved somewhere to some network manager or something - just getting by
+
+	static boost::asio::io_service m_IOService;
+private:
+
+};
+
+
+
 class NetworkPort
 {
 public:
-	NetworkPort() :
-		m_bConnected(false),
-		m_bConnecting(false) { };
+	NetworkPort();
 
 	~NetworkPort() { };
 
@@ -25,11 +41,14 @@ public:
 	virtual void Close()= 0;
 	virtual void Send(std::string)= 0;
 
-	static void Update() { m_IOService.poll(); m_IOService.reset(); }// this will probably be moved somehwere to some network manager or something - just getting by
-	static boost::asio::io_service m_IOService;
+	//static boost::asio::io_service& GetIOService();
+
+
+	//static void Update() { m_IOService.poll(); m_IOService.reset(); }// this will probably be moved somehwere to some network manager or something - just getting by
+	//static boost::asio::io_service& m_IOService;
 protected:
 	
-	
+	IOService m_IOService;
 	
 	bool m_bConnected;
 	bool m_bConnecting;
@@ -116,11 +135,7 @@ protected:
 class TCPConnection : public NetworkPort, public boost::enable_shared_from_this<TCPConnection>
 {
 public:
-	TCPConnection(boost::asio::io_service& IOService) :
-		m_bConnected(false),
-		m_bConnecting(false),
-		m_Socket(IOService),
-		m_IOService( IOService) { };
+	TCPConnection(/*boost::asio::io_service& IOService*/);
 
 	~TCPConnection() { };
 
@@ -156,20 +171,15 @@ protected:
 	std::string m_sAddress;
 	std::string m_sPort;
 
-	boost::asio::io_service& m_IOService;
+	//boost::asio::io_service& m_IOService;
 
 };
 
 // implement if needed
-class TCPServer
+class TCPServer 
 {
 public:
-	TCPServer(/*boost::asio::io_service& IOService,*/ int port) : 
-		m_IOService(NetworkPort::m_IOService),
-		m_Acceptor(NetworkPort::m_IOService, tcp::endpoint(tcp::v4(), port)) 
-	{
-		Init();
-	}
+	
 
 	void Init();
 		
@@ -177,17 +187,19 @@ public:
 
 	void Send(std::string description, std::string message);
 
+	static TCPServer& GetInstance();
 	//static void Update() { m_IOService.poll(); m_IOService.reset(); }// this will probably be moved somehwere to some network manager or something - just getting by
 
 private:
-
+	TCPServer(/*boost::asio::io_service& IOService,*/ int port);
 	void _HandleAccept(boost::shared_ptr<TCPConnection> connection, const boost::system::error_code& error);
 
-	tcp::acceptor m_Acceptor;
+	IOService m_IOService;
 
 	std::map<std::string, boost::shared_ptr<TCPConnection> > m_Connections;
 
-	boost::asio::io_service& m_IOService;
+	//boost::asio::io_service& m_IOService;
+	tcp::acceptor m_Acceptor;
 
 };
 

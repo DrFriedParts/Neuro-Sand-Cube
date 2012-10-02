@@ -148,11 +148,11 @@ void JSONBuilder::Add(std::string key, std::string value, int numChanges)
 	std::ostringstream ss;
 	if (message.compare("") != 0)
 		ss << " ,";
-	ss << "{ \n" << "\"id\": " << "\"" << key << "\",\n \"value\": " ;
+	ss << "{ " << "\"id\": " << "\"" << key << "\", \"value\": " ;
 
 
 	ss << value << " ";
-	ss << ",\n \"change_count\": " << numChanges << " \n} ";
+	ss << ", \"change_count\": " << numChanges << " } ";
 
 	std::string s(ss.str());
 	message.append(s);

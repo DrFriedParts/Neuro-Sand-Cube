@@ -10,6 +10,8 @@
 
 NeuroSandCube::NeuroSandCube(void)
 {
+	// call some inits
+	TCPServer::GetInstance();
 }
 
 
@@ -20,6 +22,8 @@ NeuroSandCube::~NeuroSandCube(void)
 
 void NeuroSandCube::Initialize(fpsent* player)
 {
+
+	
 	this->player = player;
 
 	std::string configFile = "data/NSC/nsc_config.json";
@@ -141,7 +145,7 @@ void NeuroSandCube::Update()
 	if (player->levelRestart)
 		distributor.LevelReset();
 	distributor.Distribute();
-	NetworkPort::Update();
+	IOService::Update();
 	ResetFrame();
 
 	
