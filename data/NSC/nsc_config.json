@@ -5,5 +5,11 @@
      "only_on_change":true, 
      "reset_counter_on_restart":false, 
      "interval":0 
-    }	
+    },	
+    {
+     "id":"player_x", 
+     "consumers":["127.0.0.1", "10.1.44.123"],
+     "only_on_change":true, 
+     "interval":0 
+    }
 ]
