@@ -1,6 +1,5 @@
 #include "NeuroSandCube.h"
-
-#include "Logger.h"
+#include "EZLogger.h"
 #include "ConfigReader.h"
 #include "MessageDispatchController.h"
 #include "MessageDispatcher.h"
@@ -114,16 +113,21 @@ void NeuroSandCube::Initialize(fpsent* player)
 
 				if (!dispatchController.HasDispatcher(consumer))
 				{
-					auto dispatcher = boost::shared_ptr<MessageDispatcher>(new MessageDispatcher(consumer));
-					dispatchController.AddDispatcher(consumer,dispatcher);
+				
+					std::string sub = consumer.substr(0,3);
+					if (sub.compare(std::string("COM")) == 0)
+					{
+						auto dispatcher = boost::shared_ptr<MessageDispatcher>(new MessageDispatcher(consumer));
+						dispatchController.AddDispatcher(consumer,dispatcher);
+					}
 				}
 			}
 
 		}
 		else
 		{
-			
-			Logger::GetInstance().Log("Attempting to add distribution of unsupported state!");
+
+			EZLOGGERVLSTREAM(axter::log_always) << "Attempting to add distribution of unsuported state - " << attributes->id <<"!"<< std::endl;
 		}
 		attributes = configReader.Get(++i);
 

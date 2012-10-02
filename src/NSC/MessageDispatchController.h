@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MessageDispatcher.h"
+#include "Networking.h"
 
 #include <string>
 #include <map>
@@ -33,6 +34,8 @@ private:
 	
 	MessageDispatchController();
 	std::map<std::string, boost::shared_ptr<MessageDispatcher> > m_DispatchPool;
+
+	boost::shared_ptr<TCPServer> m_spServer; //// temp!
 };
 
 

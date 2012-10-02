@@ -3,10 +3,10 @@
 #include "MessageDispatcher.h"
 
 
-MessageDispatchController::MessageDispatchController(void)
+MessageDispatchController::MessageDispatchController(void) 
 {
+	
 }
-
 
 MessageDispatchController::~MessageDispatchController(void)
 {
@@ -44,6 +44,19 @@ bool MessageDispatchController::HasDispatcher(std::string description)
 
 void MessageDispatchController::Send(std::string message, std::string destination)
 {
+
+	// okay hacking this in here for now, to get it running with server
+	// network connection.  Will change soon, simply have different connection
+	// managers, tcp, serial (etc)
+	// they will manage sending to their specific ports
+
+	static int first = 0;
+	if (first == 0)
+	{
+		m_spServer = boost::shared_ptr<TCPServer>(new TCPServer(12345));
+		++first;
+	}
+	
 	boost::shared_ptr<MessageDispatcher> dispatcher = FindDispatcher(destination);
 
 	if (dispatcher.get() != NULL)
@@ -53,5 +66,8 @@ void MessageDispatchController::Send(std::string message, std::string destinatio
 	else
 	{
 		// log could not find service
+		
+		//TEMP!
+		m_spServer->Send(destination, message);
 	}
 }

@@ -28,6 +28,9 @@
     <Filter Include="NSC">
       <UniqueIdentifier>{67015394-1661-4c42-b8f8-a578bf3cf3b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="3rdParty\EZLogger">
+      <UniqueIdentifier>{a7853cf2-3ad3-42ae-9aba-fe00c2760db9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\fpsgame\ai.cpp">
@@ -216,9 +219,6 @@
     <ClCompile Include="..\..\..\NSC\MessageDispatcher.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\NSC\Logger.cpp">
-      <Filter>NSC</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\fpsgame\ai.h">
@@ -240,9 +240,6 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\shared\cube.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\shared\ents.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\shared\geom.h">
@@ -363,7 +360,31 @@
     <ClInclude Include="..\..\..\NSC\MessageBuilderFactory.h">
       <Filter>NSC</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\NSC\Logger.h">
+    <ClInclude Include="..\..\..\ezlogger\ezlogger_macros.hpp">
+      <Filter>3rdParty\EZLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ezlogger\ezlogger_misc.hpp">
+      <Filter>3rdParty\EZLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ezlogger\ezlogger_output_policy.hpp">
+      <Filter>3rdParty\EZLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ezlogger\ezlogger_verbosity_level_policy.hpp">
+      <Filter>3rdParty\EZLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ezlogger\ezlogger.hpp">
+      <Filter>3rdParty\EZLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ezlogger\ezlogger_format_policy.hpp">
+      <Filter>3rdParty\EZLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ezlogger\ezlogger_headers.hpp">
+      <Filter>3rdParty\EZLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\shared\ents.h">
+      <Filter>Engine\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\NSC\EZLogger.h">
       <Filter>NSC</Filter>
     </ClInclude>
   </ItemGroup>
