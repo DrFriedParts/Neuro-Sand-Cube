@@ -1,3 +1,5 @@
+#include "Globals.h"
+
 #include "Networking.h"
 #include <sstream>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -326,7 +328,7 @@ void SerialPort::_SendHandler(const boost::system::error_code& errorCode)
 
 TCPServer& TCPServer::GetInstance()
 {
-	static TCPServer instance(12345);
+	static TCPServer instance(TCP_PORT);
 	return instance;
 }
 

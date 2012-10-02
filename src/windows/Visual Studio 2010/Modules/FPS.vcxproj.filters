@@ -387,6 +387,9 @@
     <ClInclude Include="..\..\..\NSC\EZLogger.h">
       <Filter>NSC</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\NSC\Globals.h">
+      <Filter>NSC</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\fpsgame\game.h">
