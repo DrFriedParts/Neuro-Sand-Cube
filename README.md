@@ -28,9 +28,10 @@ Configuration file is located at ```/data/NSC/nsc_config.json```. The overall fo
 Response format for data outputs is typically:
 
 ```json
-[
-  "value":{}
-  ""
+[ 
+{ "id": "player_x", "value": 737.891  }, 
+{ "id": "timestamp", "value": "18:05:28.183"  }, 
+{ "id": "frame", "value": 100444  }
 ]
 ```
 
