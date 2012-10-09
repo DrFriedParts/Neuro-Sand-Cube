@@ -138,3 +138,12 @@ Restarts the current map
 ### Properties
 
 * id -- ```restart_map```
+
+## reset_counter
+
+Restarts the occurance counter on the specified output
+
+### Properties
+
+* id -- ```reset_counter```
+* target -- ```player_left_click```
