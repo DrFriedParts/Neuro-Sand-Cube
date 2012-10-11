@@ -8,7 +8,7 @@ Configuration file is located at ```/data/NSC/nsc_config.json```. The overall fo
         { "id":"consumers",
           "vr_controller":"127.0.0.1",
           "my_pc":"10.16.1.45",
-          "neurotrigger","COM3:115200N81"
+          "neurotrigger":"COM3:115200N81"
         }
         {
           "id":"player_x", 
