@@ -48,6 +48,7 @@ Response format for data outputs is typically:
 { "id": "player_x", "value": 737.891  }, 
 { "id": "timestamp", "value": "18:05:28.183"  }, 
 { "id": "frame", "value": 100444  }
+{ "id": "counter", "value": 3  }
 ]
 ```
 
