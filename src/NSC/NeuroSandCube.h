@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SharedStateDistributor.h"
+#include "StateDistributor.h"
 #include "game.h"
 
 class NeuroSandCube
@@ -14,7 +14,7 @@ public:
 
 private:
 
-	SharedStateDistributor distributor;
+	StateDistributor distributor;
 	fpsent* player;
 };
 

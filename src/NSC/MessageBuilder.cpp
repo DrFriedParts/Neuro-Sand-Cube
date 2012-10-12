@@ -19,7 +19,7 @@ MessageBuilder::~MessageBuilder(void)
 {
 }
 
-void MessageBuilder::ConstructMessage(SharedStateDistribution& distribution)
+void MessageBuilder::ConstructMessage(StateDistribution& distribution)
 {
 
 }
@@ -35,7 +35,7 @@ SimpleBuilder::~SimpleBuilder()
 
 }
 /*
-void SimpleBuilder::Add(SharedStateDistribution& distribution)
+void SimpleBuilder::Add(StateDistribution& distribution)
 {
 
 	// testing code
@@ -79,7 +79,7 @@ JSONBuilder::~JSONBuilder()
 }
 
 /*
-void JSONBuilder::Add(SharedStateDistribution& distribution)
+void JSONBuilder::Add(StateDistribution& distribution)
 {
 
 	// im just hacking this in now - clean in next commit - change builder to take key and value

@@ -1,4 +1,4 @@
-#include "SharedStateDistributor.h"
+#include "StateDistributor.h"
 
 #include <assert.h>
 
@@ -6,29 +6,29 @@
 #include "MessageDispatchController.h"
 
 
-SharedStateDistributor::SharedStateDistributor(void) : currentFrame(0)
+StateDistributor::StateDistributor(void) : currentFrame(0)
 {
 }
 
 
-SharedStateDistributor::~SharedStateDistributor(void)
+StateDistributor::~StateDistributor(void)
 {
-	sharedStates.empty();  
+	states.empty();  
 	distributions.empty();  
 }
 
 
-void SharedStateDistributor::AddSharedState(std::string id, SharedStateFunctor functor)
+void StateDistributor::AddState(std::string id, StateFunctor functor)
 {
-	sharedStates[id] = functor;
+	states[id] = functor;
 	
 }
 
 
-bool SharedStateDistributor::AddDistribution(SharedStateAttributes attributes)
+bool StateDistributor::AddDistribution(StateAttributes attributes)
 {
 
-	boost::shared_ptr<SharedStateDistribution> distribution = boost::shared_ptr<SharedStateDistribution>(new SharedStateDistribution());
+	boost::shared_ptr<StateDistribution> distribution = boost::shared_ptr<StateDistribution>(new StateDistribution());
 	
 	distribution->attributes = attributes;
 
@@ -38,9 +38,9 @@ bool SharedStateDistributor::AddDistribution(SharedStateAttributes attributes)
 
 	// add shared state
 
-	auto iterator = sharedStates.find(attributes.id);
+	auto iterator = states.find(attributes.id);
 		
-	if (iterator != sharedStates.end())
+	if (iterator != states.end())
 		distribution->valueFunction = iterator->second;
 	else
 		return false;
@@ -56,7 +56,7 @@ bool SharedStateDistributor::AddDistribution(SharedStateAttributes attributes)
 
 
 
-void SharedStateDistributor::AddConsumerDistribution(boost::shared_ptr<SharedStateDistribution> distribution)
+void StateDistributor::AddConsumerDistribution(boost::shared_ptr<StateDistribution> distribution)
 {
 	// the config file specifies the consumers per shared state.  It is more efficient
 	// to send all the messages for a consumer per frame in one message though, 
@@ -71,7 +71,7 @@ void SharedStateDistributor::AddConsumerDistribution(boost::shared_ptr<SharedSta
 			if (consumer->id.compare(distribution->attributes.consumers[j]) == 0) // match
 			{
 				// already exists, append to cache
-				consumer->sharedStateCache.push_back(distribution);
+				consumer->stateCache.push_back(distribution);
 				consumerExists = true;
 			}
 		}
@@ -79,7 +79,7 @@ void SharedStateDistributor::AddConsumerDistribution(boost::shared_ptr<SharedSta
 		{
 			boost::shared_ptr<ConsumerDistributionCache> consumer = boost::shared_ptr<ConsumerDistributionCache>(new ConsumerDistributionCache());
 			consumer->id = distribution->attributes.consumers[j];
-			consumer->sharedStateCache.push_back(distribution);
+			consumer->stateCache.push_back(distribution);
 
 			consumers.push_back(consumer);
 		}
@@ -87,13 +87,13 @@ void SharedStateDistributor::AddConsumerDistribution(boost::shared_ptr<SharedSta
 
 }
 
-void SharedStateDistributor::Distribute()
+void StateDistributor::Distribute()
 {
 	for (unsigned int i =0; i < distributions.size(); ++i)
 	{
-		boost::shared_ptr<SharedStateDistribution> distribution = distributions[i];
+		boost::shared_ptr<StateDistribution> distribution = distributions[i];
 		distribution->value = distribution->valueFunction();
-		bool hasChanged = !(boost::apply_visitor(SharedState_equals(), distribution->value , distribution->prevValue));
+		bool hasChanged = !(boost::apply_visitor(State_equals(), distribution->value , distribution->prevValue));
 		
 		if ((distribution->attributes.onlyOnChange && hasChanged) || (distribution->framesPassedSinceDistribution >= distribution->attributes.interval && !distribution->attributes.onlyOnChange))
 		{
@@ -101,7 +101,7 @@ void SharedStateDistributor::Distribute()
 			distribution->framesPassedSinceDistribution = 0;
 			distribution->toBeDistributed = true;
 
-			distribution->delta = boost::apply_visitor(SharedState_difference(), distribution->value , distribution->prevValue);
+			distribution->delta = boost::apply_visitor(State_difference(), distribution->value , distribution->prevValue);
 			distribution->prevValue = distribution->value;
 
 		}
@@ -123,7 +123,7 @@ void SharedStateDistributor::Distribute()
 
 
 // this will dispatch the messages via their appropriate dispatching methods
-void SharedStateDistributor::FlushDistribution()
+void StateDistributor::FlushDistribution()
 {
 
 	// there isnt really a reason to do it this way (sort by consumer that is), we can let the message sender handle the caching.
@@ -133,15 +133,15 @@ void SharedStateDistributor::FlushDistribution()
 	{
 		auto consumer = consumers[i];
 		MessageBuilder& builder = MessageBuilderFactory::GetBuilder(consumers[i]->id);
-		for (unsigned int j = 0; j < consumer->sharedStateCache.size(); ++j)
+		for (unsigned int j = 0; j < consumer->stateCache.size(); ++j)
 		{
-			auto sharedStateCache = consumer->sharedStateCache[j];
-			if (sharedStateCache->toBeDistributed)
+			auto stateCache = consumer->stateCache[j];
+			if (stateCache->toBeDistributed)
 			{
-				if (sharedStateCache->attributes.delta)
-					builder.Add(sharedStateCache->attributes.id,boost::apply_visitor(SharedState_tostring(), sharedStateCache->delta));
+				if (stateCache->attributes.delta)
+					builder.Add(stateCache->attributes.id,boost::apply_visitor(State_tostring(), stateCache->delta));
 				else
-					builder.Add(sharedStateCache->attributes.id,boost::apply_visitor(SharedState_tostring(), sharedStateCache->value));
+					builder.Add(stateCache->attributes.id,boost::apply_visitor(State_tostring(), stateCache->value));
 			}
 		}
 		std::string finalMessage = builder.Get(currentFrame);

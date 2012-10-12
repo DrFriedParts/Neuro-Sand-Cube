@@ -29,56 +29,56 @@ void NeuroSandCube::Initialize(fpsent* player)
 	// flag captured
 	// velocity
 
-	// faced now with either extending sharedstates to have two modes of tracking - 
+	// faced now with either extending States to have two modes of tracking - 
 
-	distributor.AddSharedState("player_x",
+	distributor.AddState("player_x",
 	[player] ()
 	{
-		return SharedState(player->newpos.x);
+		return State(player->newpos.x);
 	}
 	);
 
-	distributor.AddSharedState("player_y",
+	distributor.AddState("player_y",
 	[player] ()
 	{
-		return SharedState(player->newpos.y);
+		return State(player->newpos.y);
 	}
 	);
 
-	distributor.AddSharedState("player_left_click",
+	distributor.AddState("player_left_click",
 	[player] ()
 	{
-		return SharedState(player->attacking);
+		return State(player->attacking);
 	}
 	);
 
-	distributor.AddSharedState("level_restart",
+	distributor.AddState("level_restart",
 	[player] ()
 	{
-		return SharedState(player->respawned);
+		return State(player->respawned);
 	}
 	);
 
-	distributor.AddSharedState("player_angle",
+	distributor.AddState("player_angle",
 	[player] ()
 	{
-		return SharedState(player->yaw);
+		return State(player->yaw);
 	}
 	);
 
-	distributor.AddSharedState("distance_traveled",
+	distributor.AddState("distance_traveled",
 	[player] ()
 	{
-		return SharedState( player->newpos.dist(player->startingPosition));
+		return State( player->newpos.dist(player->startingPosition));
 	}
 	);
 
-	SharedStateConfigReader configReader;
+	StateConfigReader configReader;
 	
 
 	configReader.ReadConfig(configFile);
 	int i=0;
-	boost::shared_ptr<SharedStateAttributes> attributes = configReader.Get(i);
+	boost::shared_ptr<StateAttributes> attributes = configReader.Get(i);
 
 	MessageDispatchController& dispatchController = MessageDispatchController::GetInstance();
 	while (attributes.get() != NULL)

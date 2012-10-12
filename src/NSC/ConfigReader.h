@@ -13,25 +13,28 @@
 
 #include <boost/shared_ptr.hpp>
 
-struct SharedStateAttributes;
+struct StateAttributes;
 
 // Reads the config file
-// extracts all necessary shared state to be streamed somewhere
-// and adds them to SharedStateController 
-class SharedStateConfigReader
+// reads consumer aliases
+// reads list of states to send to specific consumers
+// reads list of input commands executable by consumer
+
+class StateConfigReader
 {
 public:
-	SharedStateConfigReader() { }
-	~SharedStateConfigReader() { }
+	StateConfigReader() { }
+	~StateConfigReader() { }
 
 	void ReadConfig(std::string);
 
-	boost::shared_ptr<SharedStateAttributes> Get(int i);
+	boost::shared_ptr<StateAttributes> Get(int i);
+	
 
 
 private:
 
-	std::vector<boost::shared_ptr<SharedStateAttributes> > config;
+	std::vector<boost::shared_ptr<StateAttributes> > config;
 
 };
 

@@ -198,9 +198,6 @@
     <ClCompile Include="..\..\..\NSC\NeuroSandCube.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\NSC\SharedStateDistributor.cpp">
-      <Filter>NSC</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\NSC\ConfigReader.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
@@ -217,6 +214,9 @@
       <Filter>NSC</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\NSC\MessageDispatcher.cpp">
+      <Filter>NSC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\NSC\StateDistributor.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
   </ItemGroup>
@@ -342,9 +342,6 @@
     <ClInclude Include="..\..\..\NSC\NeuroSandCube.h">
       <Filter>NSC</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\NSC\SharedStateDistributor.h">
-      <Filter>NSC</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\NSC\MessageDispatchController.h">
       <Filter>NSC</Filter>
     </ClInclude>
@@ -385,6 +382,12 @@
       <Filter>Engine\system</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\NSC\EZLogger.h">
+      <Filter>NSC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\NSC\StateDistributor.h">
+      <Filter>NSC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\NSC\State.h">
       <Filter>NSC</Filter>
     </ClInclude>
   </ItemGroup>

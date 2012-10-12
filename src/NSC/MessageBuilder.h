@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SharedStateDistributor.h"
+#include "StateDistributor.h"
 
 // atm this class has two repsonsibilities - formatting the messages in JSON as well as formatting
 // the messages in our NSC format (ie, it knows that we send timestamps and framestamps etc)
@@ -12,7 +12,7 @@ public:
     MessageBuilder(void);
 	virtual ~MessageBuilder(void);
 
-	//virtual void Add(SharedStateDistribution& distribution) = 0;
+	//virtual void Add(StateDistribution& distribution) = 0;
 	//template <typename T>
 	virtual void Add(std::string key, std::string value, bool str = false) = 0;
 
@@ -21,7 +21,7 @@ public:
 
 private:
 
-	void ConstructMessage(SharedStateDistribution& distribution);
+	void ConstructMessage(StateDistribution& distribution);
 
 };
 
@@ -31,7 +31,7 @@ public:
 	SimpleBuilder();
 	virtual ~SimpleBuilder();
 
-	//virtual void Add(SharedStateDistribution& distribution);
+	//virtual void Add(StateDistribution& distribution);
 	void Add(std::string key, std::string value, bool str = false){};
 	virtual std::string Get(int framestamp);
 
@@ -45,7 +45,7 @@ public:
 	JSONBuilder();
 	virtual ~JSONBuilder();
 
-	//virtual void Add(SharedStateDistribution& distribution);
+	//virtual void Add(StateDistribution& distribution);
 	virtual std::string Get(int framestamp);
 	//template <typename T>
 	void Add(std::string key, std::string value, bool str = false);

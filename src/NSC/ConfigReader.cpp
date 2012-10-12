@@ -1,5 +1,5 @@
 #include "ConfigReader.h"
-#include "SharedStateDistributor.h"
+#include "State.h"
 
 #include "EZLogger.h"
 
@@ -15,7 +15,7 @@ void print_out(const char* output)
 	
 }
 
-void SharedStateConfigReader::ReadConfig(std::string file)
+void StateConfigReader::ReadConfig(std::string file)
 {
 
 	std::ifstream ifs(file);
@@ -41,7 +41,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 				}
 				else
 				{
-					boost::shared_ptr<SharedStateAttributes> attributes = boost::shared_ptr<SharedStateAttributes>(new SharedStateAttributes);
+					boost::shared_ptr<StateAttributes> attributes = boost::shared_ptr<StateAttributes>(new StateAttributes);
 					
 					JSONObject object = root[i]->AsObject();
 					if (object.find(L"id") != object.end())
@@ -152,11 +152,11 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 	}
 }
 
-boost::shared_ptr<SharedStateAttributes> SharedStateConfigReader::Get(int i)
+boost::shared_ptr<StateAttributes> StateConfigReader::Get(int i)
 {
 
 	if (i>= 0 && i < config.size())
 		return config[i];
 	else
-		return boost::shared_ptr<SharedStateAttributes>();
+		return boost::shared_ptr<StateAttributes>();
 }
