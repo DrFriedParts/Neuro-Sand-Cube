@@ -13,7 +13,6 @@
 struct StateDistribution
 {
 	StateAttributes attributes;
-
 	StateFunctor valueFunction;
 
 	State value; 

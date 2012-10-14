@@ -139,6 +139,7 @@
     </ClCompile>
     <ClCompile Include="..\..\..\fpsgame\waypoint.cpp" />
     <ClCompile Include="..\..\..\fpsgame\weapon.cpp" />
+    <ClCompile Include="..\..\..\NSC\Command.cpp" />
     <ClCompile Include="..\..\..\NSC\ConfigReader.cpp" />
     <ClCompile Include="..\..\..\NSC\MessageDispatchController.cpp" />
     <ClCompile Include="..\..\..\NSC\MessageDispatcher.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="..\..\..\fpsgame\capture.h" />
     <ClInclude Include="..\..\..\fpsgame\ctf.h" />
     <ClInclude Include="..\..\..\fpsgame\extinfo.h" />
+    <ClInclude Include="..\..\..\NSC\Command.h" />
     <ClInclude Include="..\..\..\NSC\ConfigReader.h" />
     <ClInclude Include="..\..\..\NSC\EZLogger.h" />
     <ClInclude Include="..\..\..\NSC\MessageDispatchController.h" />

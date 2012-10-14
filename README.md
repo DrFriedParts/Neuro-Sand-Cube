@@ -3,13 +3,15 @@
 Configuration file is located at ```/data/NSC/nsc_config.json```. The overall format is an object with arrays-of-objects as properties. Each of these inner-most objects represents a single event or data value to provide or accept.
 
 ```json
-{ "outputs":
-    [
-        { "id":"consumers",
+{ 
+	"aliases":
+	{ 
           "vr_controller":"127.0.0.1",
           "my_pc":"10.16.1.45",
           "neurotrigger":"COM3:115200N81"
-        }
+    },
+	"outputs":
+    [
         {
           "id":"player_x", 
           "consumers":["COM3:115200N81", 127.0.0.1, "neurotrigger"]
@@ -33,7 +35,7 @@ Configuration file is located at ```/data/NSC/nsc_config.json```. The overall fo
 
 ```
 
-The ```id``` = ```consumers``` record specifies named aliases for destinations to facilitate easy maintainence of the configuration file is hosts change. ```consumers``` of other ```id```'s can be listed by COM port, IP address, or Alias.
+The ```aliases``` record specifies named aliases for destinations to facilitate easy maintainence of the configuration file is hosts change. ```consumers``` of other ```id```'s can be listed by COM port, IP address, or Alias.
 
 If a client is not listed in any ```consumers:``` property, then *all* configured outputs are sent to it. This is useful for connecting a console laptop for debugging monitoring.
 

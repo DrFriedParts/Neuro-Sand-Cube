@@ -83,11 +83,9 @@ void NeuroSandCube::Initialize(fpsent* player)
 	MessageDispatchController& dispatchController = MessageDispatchController::GetInstance();
 	while (attributes.get() != NULL)
 	{
-		
-		
+
 		if (distributor.AddDistribution(*attributes))
 		{
-			
 			for (unsigned int j=0; j < attributes->consumers.size(); ++j)
 			{
 				auto consumer = std::string(attributes->consumers[j]);

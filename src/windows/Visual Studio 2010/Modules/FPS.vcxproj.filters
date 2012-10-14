@@ -219,6 +219,9 @@
     <ClCompile Include="..\..\..\NSC\StateDistributor.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\NSC\Command.cpp">
+      <Filter>NSC</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\fpsgame\ai.h">
@@ -388,6 +391,9 @@
       <Filter>NSC</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\NSC\State.h">
+      <Filter>NSC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\NSC\Command.h">
       <Filter>NSC</Filter>
     </ClInclude>
   </ItemGroup>
