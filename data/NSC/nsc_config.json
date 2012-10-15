@@ -11,6 +11,5 @@
      "consumers":["127.0.0.1"],
      "only_on_change":true, 
      "reset_counter_on_restart":false, 
-     "interval":0 
     }
 ]
