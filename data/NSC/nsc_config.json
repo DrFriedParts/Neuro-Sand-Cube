@@ -1,15 +1,34 @@
-[   
-    {
-     "id":"level_restart", 
-     "consumers":["COM5:115200N81","127.0.0.1"],
-     "only_on_change":true, 
-     "reset_counter_on_restart":false, 
-     "interval":0 
-    }	,
-	{
-     "id":"player_x", 
-     "consumers":["127.0.0.1"],
-     "only_on_change":true, 
-     "reset_counter_on_restart":false, 
-    }
-]
+{
+	"aliases" : 
+	{ 	
+        "vr_controller":"127.0.0.1",
+        "my_pc":"10.16.1.45",
+        "neurotrigger":"COM3:115200N81"
+    },
+	"outputs" :
+	[	
+		{
+			"id":"level_restart", 
+			"consumers":["neurotrigger","vr_controller"],
+			"only_on_change":true, 
+			"reset_counter_on_restart":false, 
+			"interval":0 
+		},	
+		{
+			"id":"player_x", 
+			"consumers":["10.1.44.123"],
+			"only_on_change":true, 
+			"interval":0 
+		}
+	],
+	"inputs":
+    [
+        { "id":"restart_map",
+          "from":["my_pc","neurotrigger"]
+        },
+        { "id":"flush_water_reward",
+          "from":["my_pc","vr_controller"],
+          "route":["neurotrigger"]
+        }
+    ]
+}

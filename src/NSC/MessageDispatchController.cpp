@@ -68,7 +68,7 @@ void MessageDispatchController::Send(std::string message, std::string destinatio
 		// log could not find service
 		
 		//TEMP!
-		TCPServer::GetInstance().Send(destination, message);
+		//TCPServer::GetInstance().Send(destination, message);
 		//m_spServer->Send(destination, message);
 	}
 }
