@@ -3,7 +3,9 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "../ezlogger/ezlogger_headers.hpp"
 
-boost::asio::io_service NetworkPort::m_IOService;
+
+
+boost::asio::io_service NetworkConnection::m_IOService;
 
 //boost::asio::io_service TCPServer::m_IOService;
 
@@ -227,7 +229,7 @@ void SerialPort::Connect()
 	
 		if (!m_Port.is_open())
 		{
-			EZLOGGERVLSTREAM(axter::log_always) << "Failed to open serial port - " << m_sPort <<"!"<< std::endl;
+			EZLOGGERVLSTREAM(axter::log_rarely) << "Failed to open serial port - " << m_sPort <<"!"<< std::endl;
 		}
 
 		m_bConnected = true;
@@ -253,7 +255,7 @@ void SerialPort::Connect()
 	{
 		m_bConnected = false;
 
-		EZLOGGERVLSTREAM(axter::log_always) << "Failed to open serial port " << m_sPort <<  std::endl;
+		EZLOGGERVLSTREAM(axter::log_rarely) << "Failed to open serial port " << m_sPort <<  std::endl;
 	}
 }
 
@@ -271,6 +273,7 @@ void SerialPort::Close()
 
 void SerialPort::_CloseConnection()
 {
+	//m_Port.shutdown();
 	m_Port.close();
 	m_bConnected = false;
 	m_bConnecting = false;
@@ -311,16 +314,24 @@ void SerialPort::_SendHandler(const boost::system::error_code& errorCode)
 
 ///////////////////////////////////////////////////////////////
 /// TCP Server
+TCPServer::~TCPServer()
+{ 
+	m_Acceptor.close(); 
+}
 
 void TCPServer::Init()
 {
-	//m_IOService = NetworkPort::m_IOService;
-	auto connection = boost::shared_ptr<TCPConnection>(new TCPConnection(m_IOService));
-	m_Acceptor.async_accept(connection->GetSocket(),
-        boost::bind(&TCPServer::_HandleAccept, this, connection,
-          boost::asio::placeholders::error));
+	//m_IOService = NetworkConnection::m_IOService;
+	_ListenConnection();
 }
 
+void TCPServer::_ListenConnection()
+{
+	auto connection = boost::shared_ptr<TCPConnection>(new TCPConnection(m_IOService));
+	m_Acceptor.async_accept(connection->GetSocket(),
+        boost::bind(&TCPServer::_HandleAccept, shared_from_this(), connection,
+          boost::asio::placeholders::error));
+}
 
 void TCPServer::_HandleAccept(boost::shared_ptr<TCPConnection> connection,const boost::system::error_code& error)
 {
@@ -331,7 +342,13 @@ void TCPServer::_HandleAccept(boost::shared_ptr<TCPConnection> connection,const 
 		std::string s = connection->GetAddres();
 		m_Connections[s] = connection;
 
-		// add to our list of connection
+		// create subscriber and add to statedistributor - need to find a more generic/cleaner way of doing this
+		auto subscriber = boost::shared_ptr<NetworkSubscriber>(new NetworkSubscriber);
+		subscriber->m_Connection = connection;
+		subscriber->id = s;
+		StateDistributor::GetInstance().AddSubscriber(subscriber);
+
+		_ListenConnection();
 	}
 	else
 	{
@@ -351,6 +368,11 @@ void TCPServer::Send(std::string description, std::string message)
 
 ///////////////////////////////////////////////////////////////
 /// TCP Connection
+
+TCPConnection::~TCPConnection()
+{
+	_CloseConnection();
+};
 
 void TCPConnection::Init() 
 {
@@ -436,8 +458,17 @@ void TCPConnection::_SendHandler(const boost::system::error_code& errorCode)
 
 void TCPConnection::_CloseConnection()
 {
+//	m_Socket.shutdown(boost::asio::ip::tcp::socket::shutdown_send);
 	m_Socket.close();
 	m_bConnected = false;
 	//m_bAddressResolved = false;	
 	m_bConnecting = false;
+}
+
+
+
+void NetworkSubscriber::Send(std::string msg)
+{
+	if (m_Connection.get() != NULL)
+		m_Connection->Send(msg);
 }

@@ -9,16 +9,18 @@
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
+#include "StateDistributor.h"
+
 using boost::asio::ip::tcp;
 
-class NetworkPort
+class NetworkConnection
 {
 public:
-	NetworkPort() :
+	NetworkConnection() :
 		m_bConnected(false),
 		m_bConnecting(false) { };
 
-	~NetworkPort() { };
+	~NetworkConnection() { };
 
 	virtual void Init() = 0; 
 	virtual void Connect()= 0;
@@ -41,7 +43,7 @@ protected:
 
 // basic networking classes used for transmission of plain text messages over tcp
 /*
-class TCPClient : public NetworkPort
+class TCPClient : public NetworkConnection
 {
 public:
 	TCPClient(std::string ip, std::string port);
@@ -85,7 +87,7 @@ enum SerialPort_Parity
 	SP_PARITY_EVEN
 };
 
-class SerialPort: public NetworkPort
+class SerialPort: public NetworkConnection
 {
 public:
 	SerialPort(std::string port, int iBaudRate, SerialPort_Parity eParity, int iDataBits, float fStopBits );
@@ -113,7 +115,7 @@ protected:
 
 };
 
-class TCPConnection : public NetworkPort, public boost::enable_shared_from_this<TCPConnection>
+class TCPConnection : public NetworkConnection, public boost::enable_shared_from_this<TCPConnection>
 {
 public:
 	TCPConnection(boost::asio::io_service& IOService) :
@@ -122,7 +124,7 @@ public:
 		m_Socket(IOService),
 		m_IOService( IOService) { };
 
-	~TCPConnection() { };
+	~TCPConnection();
 
 	virtual void Init() ; 
 	virtual void Connect();
@@ -161,26 +163,24 @@ protected:
 };
 
 // implement if needed
-class TCPServer
+class TCPServer : public boost::enable_shared_from_this<TCPServer>
 {
 public:
 	TCPServer(/*boost::asio::io_service& IOService,*/ int port) : 
-		m_IOService(NetworkPort::m_IOService),
-		m_Acceptor(NetworkPort::m_IOService, tcp::endpoint(tcp::v4(), port)) 
+		m_IOService(NetworkConnection::m_IOService),
+		m_Acceptor(NetworkConnection::m_IOService, tcp::endpoint(tcp::v4(), port)) 
 	{
-		Init();
+		//Init();
 	}
 
 	void Init();
 		
-	~TCPServer() { }
+	~TCPServer();
 
 	void Send(std::string description, std::string message);
 
-	//static void Update() { m_IOService.poll(); m_IOService.reset(); }// this will probably be moved somehwere to some network manager or something - just getting by
-
 private:
-
+	void _ListenConnection();
 	void _HandleAccept(boost::shared_ptr<TCPConnection> connection, const boost::system::error_code& error);
 
 	tcp::acceptor m_Acceptor;
@@ -190,6 +190,14 @@ private:
 	boost::asio::io_service& m_IOService;
 
 };
+
+struct NetworkSubscriber: public StateSubscriber
+{
+	virtual void Send(std::string);
+	boost::shared_ptr<NetworkConnection> m_Connection;
+};
+
+
 
 
 #endif

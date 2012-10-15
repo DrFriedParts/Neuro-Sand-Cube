@@ -10,10 +10,18 @@
 
 #include <boost/shared_ptr.hpp>
 
+
+struct StateSubscriber
+{
+	virtual void Send(std::string) =0;
+	std::string id;
+};
+
 struct StateDistribution
 {
 	StateAttributes attributes;
 	StateFunctor valueFunction;
+	//Functor hasChanged
 
 	State value; 
 	State prevValue; 
@@ -39,14 +47,17 @@ struct ConsumerDistributionCache
 class StateDistributor
 {
 public:
-	StateDistributor(void);
+	static StateDistributor& GetInstance();
 	~StateDistributor(void);
 
 	void AddState(std::string id, StateFunctor);
 	bool AddDistribution(StateAttributes attributes);
+	void AddSubscriber(boost::shared_ptr<StateSubscriber> subscriber);
 	void Distribute(); // this should be called every frame.
 	
 private:
+
+	StateDistributor(void);
 
 	void AddConsumerDistribution(boost::shared_ptr<StateDistribution> distribution);
 	void FlushDistribution();
@@ -55,9 +66,14 @@ private:
 
 	std::vector<boost::shared_ptr<StateDistribution> > distributions;
 	std::vector<boost::shared_ptr<ConsumerDistributionCache> > consumers;
+	std::vector<boost::shared_ptr<StateSubscriber> > subscribers;
+	std::map<std::string, boost::shared_ptr<ConsumerDistributionCache> > consumerMap;
 	std::map<std::string, StateFunctor > states;
 
 	int currentFrame;		// frames since the distributor was started. 
 };
+
+
+
 
 #endif

@@ -14,7 +14,7 @@ public:
 
 private:
 
-	boost::shared_ptr<NetworkPort> m_spPort;
+	boost::shared_ptr<NetworkConnection> m_spPort;
 
 };
 

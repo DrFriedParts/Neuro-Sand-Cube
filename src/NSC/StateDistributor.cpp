@@ -5,6 +5,11 @@
 #include "MessageBuilderFactory.h"
 #include "MessageDispatchController.h"
 
+StateDistributor& StateDistributor::GetInstance()
+{
+	static StateDistributor instance;
+	return instance;
+}
 
 StateDistributor::StateDistributor(void) : currentFrame(0)
 {
@@ -53,7 +58,11 @@ bool StateDistributor::AddDistribution(StateAttributes attributes)
 
 }
 
+void StateDistributor::AddSubscriber(boost::shared_ptr<StateSubscriber> subscriber)
+{
+	subscribers.push_back(subscriber);
 
+}
 
 
 void StateDistributor::AddConsumerDistribution(boost::shared_ptr<StateDistribution> distribution)
@@ -82,6 +91,7 @@ void StateDistributor::AddConsumerDistribution(boost::shared_ptr<StateDistributi
 			consumer->stateCache.push_back(distribution);
 
 			consumers.push_back(consumer);
+			consumerMap[consumer->id] = consumer;
 		}
 	}
 
@@ -126,10 +136,59 @@ void StateDistributor::Distribute()
 void StateDistributor::FlushDistribution()
 {
 
-	// there isnt really a reason to do it this way (sort by consumer that is), we can let the message sender handle the caching.
-	// will leave it for now, but TODO
-	//JSONBuilder builder;
-	for (unsigned int i = 0; i < consumers.size(); ++i) 
+	for (auto iterator = subscribers.begin(); iterator != subscribers.end(); iterator++)
+	{
+		auto subscriber = *iterator;
+		MessageBuilder& builder = MessageBuilderFactory::GetBuilder(subscriber->id);
+
+
+		// pick a vector of distributions - either consumer specific or all
+		auto& requiredStates = distributions;
+		auto consumerIter = consumerMap.find(subscriber->id);
+		if (consumerIter != consumerMap.end())
+		{
+			requiredStates = (*consumerIter).second->stateCache;
+		
+		}
+		for (auto iterator = requiredStates.begin(); iterator != requiredStates.end(); iterator++)
+		{
+			auto state = *iterator;
+			if (state->toBeDistributed)
+			{
+				if (state->attributes.delta)
+					builder.Add(state->attributes.id,boost::apply_visitor(State_tostring(), state->delta));
+				else
+					builder.Add(state->attributes.id,boost::apply_visitor(State_tostring(), state->value));
+			}
+		}
+
+		/*else
+		{
+			// send all configs
+			for (auto iterator = distributions.begin(); iterator != distributions.end(); iterator++)
+			{
+				auto state = *iterator;
+				if (state->toBeDistributed)
+				{
+					if (state->attributes.delta)
+						builder.Add(state->attributes.id,boost::apply_visitor(State_tostring(), state->delta));
+					else
+						builder.Add(state->attributes.id,boost::apply_visitor(State_tostring(), state->value));
+				}
+			}
+		}*/
+
+		std::string finalMessage = builder.Get(currentFrame);
+		if (finalMessage.compare("") != 0)
+		{
+			//MessageDispatchController& dispatchController = MessageDispatchController::GetInstance();
+			//dispatchController.Send(finalMessage, consumers[i]->id);
+			subscriber->Send(finalMessage);
+		}
+
+	}
+
+	/*for (unsigned int i = 0; i < consumers.size(); ++i) 
 	{
 		auto consumer = consumers[i];
 		MessageBuilder& builder = MessageBuilderFactory::GetBuilder(consumers[i]->id);
@@ -151,6 +210,6 @@ void StateDistributor::FlushDistribution()
 			dispatchController.Send(finalMessage, consumers[i]->id);
 		}
 
-	}
+	}*/
 
 }

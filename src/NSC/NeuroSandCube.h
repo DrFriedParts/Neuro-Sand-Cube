@@ -3,6 +3,8 @@
 #include "StateDistributor.h"
 #include "game.h"
 
+class TCPServer;
+
 class NeuroSandCube
 {
 public:
@@ -10,11 +12,15 @@ public:
 	~NeuroSandCube(void);
 
 	void Initialize(fpsent* player);
+
+	boost::shared_ptr<StateSubscriber> CreateSerialPortSubscriber(std::string);
 	void Update();
 
 private:
 
-	StateDistributor distributor;
+	//StateDistributor& distributor;
 	fpsent* player;
+
+	boost::shared_ptr<TCPServer> m_spServer; //// temp!
 };
 
