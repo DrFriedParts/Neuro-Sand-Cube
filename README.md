@@ -128,7 +128,7 @@ The mouse has teleported. Value = 1
 
 ### Properties
 
-* from -- List of clients to accept this command from. Note that if a client is not listed in *any* of the ```from``` attributes, then *all* commands are accepted. If the client is listed anywhere, then only the specified commands are accepted from it. This helps with 3rd party instruments that are be verbose on their external communication channels.
+* from -- List of clients to accept this command from. Note that if a client is not listed in *any* of the ```from``` attributes, then *all* commands are accepted. If the client is listed anywhere, then only the specified commands are accepted from it. This helps with 3rd party instruments that are verbose on their external communication channels.
 
 * route -- List of destinations to route the command. If ```route``` is specified, then the incoming command is piped to the specified destinations. This is useful for controlling/reseting/sync'ing external systems to the VR environment in an simple orderly manner. Some commands take action. This happens in addition to routing (e.g. any command may be routed and routing doesn't effect the normal behavior of that command).
 
