@@ -153,6 +153,23 @@ In this example, as before, the level is restarted, but now all other (assuming 
 }
 ```
 
+### Usage
+
+Using the prior configuration as an example, imagine the following sent from the serial device connected at ```COM3:115200N81```:
+
+```coffeescript
+{
+  "id":"restart_map"
+}
+```
+
+The NSC restarts its current level (performing any associated actions as specified in the config file, such as resetting level counters) and echoes the message back to ```COM3``` in addition to sending it to ```10.16.1.7```. The message looks the same as the original (except we remove whitespace and terminate with a new-line):
+
+```coffeescript
+{"id":"restart_map"}\n
+```
+
+
 ## restart_map
 
 Restarts the current map
