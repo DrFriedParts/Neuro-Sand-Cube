@@ -132,6 +132,27 @@ The mouse has teleported. Value = 1
 
 * route -- List of destinations to route the command. If ```route``` is specified, then the incoming command is piped to the specified destinations. This is useful for controlling/reseting/sync'ing external systems to the VR environment in an simple orderly manner. Some commands take action. This happens in addition to routing (e.g. any command may be routed and routing doesn't effect the normal behavior of that command).
 
+### Examples
+
+Restarts the current map and let's a serial-attached device and a network-attached console (at ```10.16.1.7```) know that it occured. The network client must already have an open connection to this server to see the message. Messages are not delay-tolerant -- the client must be connected at the time of the event to receive.
+
+```coffeescript
+{
+  id: "restart_map",
+  route: ["COM3:115200N81","10.16.1.7"],
+}
+```
+
+In this example, as before, the level is restarted, but now all other (assuming this is the total contents of the input section) output from ```10.16.1.7``` is ignored. Putting the same alias in both "from" and "route" results in a local echo.
+
+```coffeescript
+{
+  id: "restart_map",
+  from: ["10.16.1.7"],
+  route: ["COM3:115200N81","10.16.1.7"],
+}
+```
+
 ## restart_map
 
 Restarts the current map
@@ -148,3 +169,11 @@ Restarts the occurance counter on the specified output
 
 * id -- ```reset_counter```
 * target -- ```player_left_click```
+
+## else
+
+Any ```id``` that isn't specifically ennumerated above (e.g. given a specific action that effects the NSC server/environment directly) found in the config file is simply processed without taking a local action. It still routes and respects ```from``` rules. This is crazy useful in interfacing and configuring external instruments without having to modify the NSC source code to explicitly support them. 
+
+### Properties
+
+* id -- ```<anything else not listed above>```
