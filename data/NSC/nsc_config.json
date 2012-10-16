@@ -24,11 +24,11 @@
 	"inputs":
     [
         { "id":"restart_map",
-          "from":["my_pc","neurotrigger"]
+          "from":["vr_controller","neurotrigger"]
         },
         { "id":"flush_water_reward",
           "from":["my_pc","vr_controller"],
-          "route":["neurotrigger"]
+          "route":["vr_controller"]
         }
     ]
 }

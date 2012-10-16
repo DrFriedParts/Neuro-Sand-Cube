@@ -3,7 +3,6 @@
 #include <assert.h>
 
 #include "MessageBuilderFactory.h"
-#include "MessageDispatchController.h"
 
 StateDistributor& StateDistributor::GetInstance()
 {
@@ -58,7 +57,7 @@ bool StateDistributor::AddDistribution(StateAttributes attributes)
 
 }
 
-void StateDistributor::AddSubscriber(boost::shared_ptr<StateSubscriber> subscriber)
+void StateDistributor::AddSubscriber(boost::shared_ptr<ConnectionInterface> subscriber)
 {
 	subscribers.push_back(subscriber);
 
@@ -162,56 +161,14 @@ void StateDistributor::FlushDistribution()
 			}
 		}
 
-		/*else
-		{
-			// send all configs
-			for (auto iterator = distributions.begin(); iterator != distributions.end(); iterator++)
-			{
-				auto state = *iterator;
-				if (state->toBeDistributed)
-				{
-					if (state->attributes.delta)
-						builder.Add(state->attributes.id,boost::apply_visitor(State_tostring(), state->delta));
-					else
-						builder.Add(state->attributes.id,boost::apply_visitor(State_tostring(), state->value));
-				}
-			}
-		}*/
 
 		std::string finalMessage = builder.Get(currentFrame);
 		if (finalMessage.compare("") != 0)
 		{
-			//MessageDispatchController& dispatchController = MessageDispatchController::GetInstance();
-			//dispatchController.Send(finalMessage, consumers[i]->id);
 			subscriber->Send(finalMessage);
 		}
 
 	}
-
-	/*for (unsigned int i = 0; i < consumers.size(); ++i) 
-	{
-		auto consumer = consumers[i];
-		MessageBuilder& builder = MessageBuilderFactory::GetBuilder(consumers[i]->id);
-		for (unsigned int j = 0; j < consumer->stateCache.size(); ++j)
-		{
-			auto stateCache = consumer->stateCache[j];
-			if (stateCache->toBeDistributed)
-			{
-				if (stateCache->attributes.delta)
-					builder.Add(stateCache->attributes.id,boost::apply_visitor(State_tostring(), stateCache->delta));
-				else
-					builder.Add(stateCache->attributes.id,boost::apply_visitor(State_tostring(), stateCache->value));
-			}
-		}
-		std::string finalMessage = builder.Get(currentFrame);
-		if (finalMessage.compare("") != 0)
-		{
-			MessageDispatchController& dispatchController = MessageDispatchController::GetInstance();
-			dispatchController.Send(finalMessage, consumers[i]->id);
-		}
-
-	}*/
-
 }
 
 void StateDistributor::LevelReset()

@@ -1,8 +1,8 @@
 #include "NeuroSandCube.h"
 #include "EZLogger.h"
 #include "ConfigReader.h"
-#include "MessageDispatchController.h"
-#include "MessageDispatcher.h"
+#include "ConnectionMediator.h"
+#include "CommandController.h"
 
 #include <sstream>
 #include <set>
@@ -23,10 +23,10 @@ NeuroSandCube::~NeuroSandCube(void)
 
 void NeuroSandCube::Initialize(fpsent* player)
 {
-	//IOService::GetInstance();
-
+	m_spCommandController = boost::shared_ptr<CommandController>(new CommandController());
+	m_spConnectionMediator = boost::shared_ptr<ConnectionMediator>(new ConnectionMediator(m_spCommandController));
 	m_spIOService = boost::shared_ptr<IOService>(new IOService());
-	m_spServer = boost::shared_ptr<TCPServer>(new TCPServer(m_spIOService->m_IOService,12345));
+	m_spServer = boost::shared_ptr<TCPServer>(new TCPServer(m_spIOService->m_IOService,12345,*m_spConnectionMediator));
 	m_spServer->Init();
 
 	this->player = player;
@@ -102,9 +102,8 @@ void NeuroSandCube::Initialize(fpsent* player)
 
 	configReader.ReadConfig(configFile);
 	int i=0;
-	boost::shared_ptr<StateAttributes> attributes = configReader.Get(i);
+	boost::shared_ptr<StateAttributes> attributes = configReader.GetStateAttribute(i);
 
-	MessageDispatchController& dispatchController = MessageDispatchController::GetInstance();
 	std::set<std::string> serialPortSet;
 	while (attributes.get() != NULL)
 	{
@@ -116,19 +115,12 @@ void NeuroSandCube::Initialize(fpsent* player)
 				auto consumer = std::string(attributes->consumers[j]);
 				std::istringstream oss(consumer);
 
-				//if (!dispatchController.HasDispatcher(consumer))
+				std::string sub = consumer.substr(0,3);
+				if (sub.compare(std::string("COM")) == 0)
 				{
-				
-					std::string sub = consumer.substr(0,3);
-					if (sub.compare(std::string("COM")) == 0)
-					{
-						//auto dispatcher = boost::shared_ptr<MessageDispatcher>(new MessageDispatcher(consumer));
-						//dispatchController.AddDispatcher(consumer,dispatcher);
-
-						//distributor.AddSubscriber(CreateSerialPortSubscriber(consumer));
-						serialPortSet.insert(consumer);
-					}
+					serialPortSet.insert(consumer);
 				}
+
 			}
 
 		}
@@ -137,14 +129,32 @@ void NeuroSandCube::Initialize(fpsent* player)
 
 			EZLOGGERVLSTREAM(axter::log_always) << "Attempting to add distribution of unsuported state - " << attributes->id <<"!"<< std::endl;
 		}
-		attributes = configReader.Get(++i);
+		attributes = configReader.GetStateAttribute(++i);
 
 	}
 
 	for (auto iterator = serialPortSet.begin(); iterator != serialPortSet.end(); iterator++)
 	{
-		distributor.AddSubscriber(CreateSerialPortSubscriber(*iterator));
+		/*distributor.AddSubscriber(*/CreateSerialPort(*iterator)/*)*/;
 	}
+
+
+	// setup command attributes
+
+	m_spCommandController->AddCommand("restart_map",
+		[player] () { game::spawnplayer(player); });
+
+	i=0;
+	auto commandAttribute = configReader.GetCommandAttribute(i);
+
+	while (commandAttribute.get() != NULL)
+	{
+
+		m_spCommandController->AddConfiguration(*commandAttribute);
+		commandAttribute = configReader.GetCommandAttribute(++i);
+	}
+
+
 
 
 }
@@ -152,12 +162,13 @@ void NeuroSandCube::Initialize(fpsent* player)
 void NeuroSandCube::Update()
 {
 
+	m_spCommandController->PollCommands();
+
 	if (player->levelRestart)
 		StateDistributor::GetInstance().LevelReset();
 
 	StateDistributor::GetInstance().Distribute();
-//	NetworkConnection::Update();
-	//IOService::GetInstance().Update();
+	
 	m_spIOService->Update();
 	ResetFrame();
 
@@ -166,12 +177,13 @@ void NeuroSandCube::Update()
 
 void NeuroSandCube::ResetFrame()
 {
+	
 	player->levelRestart = false;
 	player->teleported = false;
 }
 
 
-boost::shared_ptr<StateSubscriber>  NeuroSandCube::CreateSerialPortSubscriber(std::string description)
+boost::shared_ptr<StateSubscriber>  NeuroSandCube::CreateSerialPort(std::string description)
 {
 	// i have moved this here temporarily since i dont know where to handle the creation right now.
 
@@ -237,8 +249,9 @@ boost::shared_ptr<StateSubscriber>  NeuroSandCube::CreateSerialPortSubscriber(st
 		}
 
 		serialPort = boost::shared_ptr<SerialPort>(new SerialPort(m_spIOService->m_IOService,address,iBaudRate,eParity,iDataBits,fStopBits));
-		subscriber->m_Connection = serialPort;
-		subscriber->id = description;
+		/*subscriber->m_Connection = serialPort;
+		subscriber->id = description;*/
+		m_spConnectionMediator->AddConnection(description, serialPort);
 	}
 
 	return subscriber;

@@ -1,6 +1,6 @@
 #include "ConfigReader.h"
 #include "State.h"
-#include "Command.h"
+#include "CommandController.h"
 
 #include "EZLogger.h"
 
@@ -266,7 +266,7 @@ std::vector<std::string> StateConfigReader::_ReadSources(JSONValue* value)
 	return sources;
 }
 
-boost::shared_ptr<StateAttributes> StateConfigReader::Get(int i)
+boost::shared_ptr<StateAttributes> StateConfigReader::GetStateAttribute(int i)
 {
 
 	if (i>= 0 && i < config.size())
@@ -274,3 +274,14 @@ boost::shared_ptr<StateAttributes> StateConfigReader::Get(int i)
 	else
 		return boost::shared_ptr<StateAttributes>();
 }
+
+boost::shared_ptr<CommandAttributes> StateConfigReader::GetCommandAttribute(int i)
+{
+
+	if (i>= 0 && i < m_CommandConfig.size())
+		return m_CommandConfig[i];
+	else
+		return boost::shared_ptr<CommandAttributes>();
+}
+
+

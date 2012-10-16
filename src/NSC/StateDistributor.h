@@ -2,6 +2,7 @@
 #define __SHARED_STATE_DISTRIBUTOR_H__
 
 #include "State.h"
+#include "Connection.h"
 
 #include <vector>
 #include <string>
@@ -52,7 +53,7 @@ public:
 
 	void AddState(std::string id, StateFunctor);
 	bool AddDistribution(StateAttributes attributes);
-	void AddSubscriber(boost::shared_ptr<StateSubscriber> subscriber);
+	void AddSubscriber(boost::shared_ptr<ConnectionInterface> subscriber);
 	void Distribute(); // this should be called every frame.
 
 	void LevelReset();
@@ -68,7 +69,7 @@ private:
 
 	std::vector<boost::shared_ptr<StateDistribution> > distributions;
 	std::vector<boost::shared_ptr<ConsumerDistributionCache> > consumers;
-	std::vector<boost::shared_ptr<StateSubscriber> > subscribers;
+	std::vector<boost::shared_ptr<ConnectionInterface> > subscribers;
 	std::map<std::string, boost::shared_ptr<ConsumerDistributionCache> > consumerMap;
 	std::map<std::string, StateFunctor > states;
 

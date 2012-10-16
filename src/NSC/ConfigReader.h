@@ -30,7 +30,8 @@ public:
 	~StateConfigReader() { }
 	void ReadConfig(std::string);
 
-	boost::shared_ptr<StateAttributes> Get(int i);
+	boost::shared_ptr<StateAttributes> GetStateAttribute(int i);
+	boost::shared_ptr<CommandAttributes> GetCommandAttribute(int i);
 	
 private:
 	

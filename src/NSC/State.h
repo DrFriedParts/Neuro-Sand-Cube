@@ -6,6 +6,7 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <sstream>
 
 typedef boost::variant<int, float, bool> State;				// shared states can be int, float, or bool. others can be added but this is fine for now
 typedef std::function<State ()> StateFunctor;

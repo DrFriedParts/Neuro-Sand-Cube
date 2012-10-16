@@ -201,9 +201,6 @@
     <ClCompile Include="..\..\..\NSC\ConfigReader.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\NSC\MessageDispatchController.cpp">
-      <Filter>NSC</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\NSC\Networking.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
@@ -213,13 +210,16 @@
     <ClCompile Include="..\..\..\NSC\MessageBuilderFactory.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\NSC\MessageDispatcher.cpp">
-      <Filter>NSC</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\NSC\StateDistributor.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\NSC\Command.cpp">
+    <ClCompile Include="..\..\..\NSC\ConnectionMediator.cpp">
+      <Filter>NSC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\NSC\Connection.cpp">
+      <Filter>NSC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\NSC\CommandController.cpp">
       <Filter>NSC</Filter>
     </ClCompile>
   </ItemGroup>
@@ -345,12 +345,6 @@
     <ClInclude Include="..\..\..\NSC\NeuroSandCube.h">
       <Filter>NSC</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\NSC\MessageDispatchController.h">
-      <Filter>NSC</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\NSC\MessageDispatcher.h">
-      <Filter>NSC</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\NSC\Networking.h">
       <Filter>NSC</Filter>
     </ClInclude>
@@ -388,7 +382,7 @@
       <Filter>NSC</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\NSC\Globals.h">
-		<Filter>NSC</Filter>
+      <Filter>NSC</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\NSC\StateDistributor.h">
       <Filter>NSC</Filter>
@@ -396,7 +390,13 @@
     <ClInclude Include="..\..\..\NSC\State.h">
       <Filter>NSC</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\NSC\Command.h">
+    <ClInclude Include="..\..\..\NSC\ConnectionMediator.h">
+      <Filter>NSC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\NSC\Connection.h">
+      <Filter>NSC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\NSC\CommandController.h">
       <Filter>NSC</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,5 @@
 #include "MessageBuilder.h"
 
-#include "MessageDispatchController.h"
-
 #include <sstream>
 #include <fstream>
 
