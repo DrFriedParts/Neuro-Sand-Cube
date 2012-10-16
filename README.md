@@ -41,6 +41,8 @@ If a client is not listed in any ```consumers:``` property, then *all* configure
 
 Similarly, if a client is not listed in any ```from:``` field, then *all* inputs are accepted from it. Same reason.
 
+If an input is sent by a client that is not one of the supported input commands (eg restart_map) it can still be routed to other clients if specified in the above configuration.
+
 # OUTPUTS
 
 Response format for data outputs is typically:
