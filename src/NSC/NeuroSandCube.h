@@ -3,7 +3,9 @@
 #include "StateDistributor.h"
 #include "game.h"
 
+//forward decl
 class TCPServer;
+class IOService;
 
 class NeuroSandCube
 {
@@ -23,6 +25,7 @@ private:
 	//StateDistributor& distributor;
 	fpsent* player;
 
-	boost::shared_ptr<TCPServer> m_spServer; //// temp!
+	boost::shared_ptr<TCPServer> m_spServer; 
+	boost::shared_ptr<IOService> m_spIOService;
 };
 

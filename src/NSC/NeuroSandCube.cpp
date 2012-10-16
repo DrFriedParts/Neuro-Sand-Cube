@@ -23,8 +23,10 @@ NeuroSandCube::~NeuroSandCube(void)
 
 void NeuroSandCube::Initialize(fpsent* player)
 {
+	//IOService::GetInstance();
 
-	m_spServer = boost::shared_ptr<TCPServer>(new TCPServer(12345));
+	m_spIOService = boost::shared_ptr<IOService>(new IOService());
+	m_spServer = boost::shared_ptr<TCPServer>(new TCPServer(m_spIOService->m_IOService,12345));
 	m_spServer->Init();
 
 	this->player = player;
@@ -154,7 +156,9 @@ void NeuroSandCube::Update()
 		StateDistributor::GetInstance().LevelReset();
 
 	StateDistributor::GetInstance().Distribute();
-	NetworkConnection::Update();
+//	NetworkConnection::Update();
+	//IOService::GetInstance().Update();
+	m_spIOService->Update();
 	ResetFrame();
 
 	
@@ -232,7 +236,7 @@ boost::shared_ptr<StateSubscriber>  NeuroSandCube::CreateSerialPortSubscriber(st
 			EZLOGGERVLSTREAM(axter::log_always) << "Failed to initialize serial port - " << description <<". Incorrect format specified!"<< std::endl;
 		}
 
-		serialPort = boost::shared_ptr<SerialPort>(new SerialPort(address,iBaudRate,eParity,iDataBits,fStopBits));
+		serialPort = boost::shared_ptr<SerialPort>(new SerialPort(m_spIOService->m_IOService,address,iBaudRate,eParity,iDataBits,fStopBits));
 		subscriber->m_Connection = serialPort;
 		subscriber->id = description;
 	}

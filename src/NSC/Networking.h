@@ -13,25 +13,31 @@
 
 using boost::asio::ip::tcp;
 
-/*
-<<<<<<< HEAD
+
 class IOService
 {
 public:
 	IOService()  
 	{
-		
+		m_IOService = boost::shared_ptr<boost::asio::io_service>(new boost::asio::io_service);
 	};
+	
 	~IOService() { };
 
-	static void Update() { m_IOService.poll(); m_IOService.reset(); }// this will probably be moved somewhere to some network manager or something - just getting by
+	void Update() { m_IOService->poll(); m_IOService->reset(); }// this will probably be moved somewhere to some network manager or something - just getting by
 
-	static boost::asio::io_service m_IOService;
+	boost::shared_ptr<boost::asio::io_service> m_IOService;
+	//static boost::shared_ptr<IOService> GetInstance() { if (m_Instance.get() == NULL) m_Instance = boost::shared_ptr<IOService>(new IOService()); return io;};
+
 private:
+
+	
+
+	//static boost::shared_ptr<IOService> m_Instance;
 
 };
 
-*/
+
 
 
 class NetworkConnection
@@ -48,11 +54,11 @@ public:
 	  virtual void Close()= 0;
 	  virtual void Send(std::string)= 0;
 
-	  static void Update() { m_IOService.poll(); m_IOService.reset(); }// this will probably be moved somehwere to some network manager or something - just getting by
-	  static boost::asio::io_service m_IOService;
+	  //static void Update() { m_IOService.poll(); m_IOService.reset(); }// this will probably be moved somehwere to some network manager or something - just getting by
+	 // static boost::asio::io_service m_IOService;
 protected:
 
-
+	//IOService 
 
 	bool m_bConnected;
 	bool m_bConnecting;
@@ -111,7 +117,7 @@ enum SerialPort_Parity
 class SerialPort: public NetworkConnection
 {
 public:
-	SerialPort(std::string port, int iBaudRate, SerialPort_Parity eParity, int iDataBits, float fStopBits );
+	SerialPort(boost::shared_ptr<boost::asio::io_service>, std::string port, int iBaudRate, SerialPort_Parity eParity, int iDataBits, float fStopBits );
 	~SerialPort();
 
 	void Init(); 
@@ -125,7 +131,9 @@ protected:
 	void _SendHandler(const boost::system::error_code& errorCode);
 	void _CloseConnection();
 
-	boost::asio::serial_port m_Port;
+	boost::shared_ptr<boost::asio::serial_port> m_Port;
+
+	boost::shared_ptr<boost::asio::io_service> m_spIOService;
 	
 	std::string m_sPort;
 
@@ -139,11 +147,11 @@ protected:
 class TCPConnection : public NetworkConnection, public boost::enable_shared_from_this<TCPConnection>
 {
 public:
-	TCPConnection(boost::asio::io_service& IOService) :
+	TCPConnection(boost::shared_ptr<boost::asio::io_service> ioservice) :
 	  m_bConnected(false),
 		  m_bConnecting(false),
-		  m_Socket(IOService),
-		  m_IOService( IOService) { };
+		  m_Socket(*ioservice),
+		  m_IOService(ioservice) { };
 
 	~TCPConnection();
 
@@ -179,7 +187,8 @@ protected:
 	std::string m_sAddress;
 	std::string m_sPort;
 
-	boost::asio::io_service& m_IOService;
+	//boost::asio::io_service& m_IOService;
+	boost::shared_ptr<boost::asio::io_service> m_IOService;
 
 };
 
@@ -188,10 +197,12 @@ protected:
 class TCPServer : public boost::enable_shared_from_this<TCPServer>
 {
 public:
-	TCPServer(/*boost::asio::io_service& IOService,*/ int port) : 
-		m_IOService(NetworkConnection::m_IOService),
-		m_Acceptor(NetworkConnection::m_IOService, tcp::endpoint(tcp::v4(), port)) 
+	TCPServer(boost::shared_ptr<boost::asio::io_service> ioservice, int port) :
+		m_spIOService(ioservice)
+		//m_Acceptor(NetworkConnection::m_IOService, tcp::endpoint(tcp::v4(), port)) 
 	{
+		
+		m_Acceptor = boost::shared_ptr<tcp::acceptor>(new tcp::acceptor(*m_spIOService, tcp::endpoint(tcp::v4(), port))); 
 		//Init();
 	}
 
@@ -204,7 +215,7 @@ public:
 
 	//static TCPServer& GetInstance();
 	//static void Update() { m_IOService.poll(); m_IOService.reset(); }// this will probably be moved somehwere to some network manager or something - just getting by
-
+	
 /*
 	private:
 		TCPServer(/ *boost::asio::io_service& IOService,* / int port);*/
@@ -216,10 +227,12 @@ private:
 
 	//IOService m_IOService;
 
+	//boost::shared_ptr<IOService> IOService m_spIOService;
+	boost::shared_ptr<boost::asio::io_service> m_spIOService;
 	std::map<std::string, boost::shared_ptr<TCPConnection> > m_Connections;
 
-	boost::asio::io_service& m_IOService;
-	tcp::acceptor m_Acceptor;
+	//boost::asio::io_service& m_IOService;
+	boost::shared_ptr<tcp::acceptor> m_Acceptor;
 
 };
 

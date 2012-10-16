@@ -6,7 +6,8 @@
 #include "../ezlogger/ezlogger_headers.hpp"
 
 
-boost::asio::io_service NetworkConnection::m_IOService;
+//boost::asio::io_service NetworkConnection::m_IOService;
+//boost::asio::io_service IOService::m_IOService;
 
 //boost::asio::io_service TCPServer::m_IOService;
 
@@ -205,14 +206,16 @@ void TCPClient::_SendHandler(const boost::system::error_code& errorCode)
 ////
 
 
-SerialPort::SerialPort(std::string port, int iBaudRate, SerialPort_Parity eParity, int iDataBits, float fStopBits ) :
-	m_Port(m_IOService), 
+SerialPort::SerialPort(boost::shared_ptr<boost::asio::io_service> ioservice, std::string port, int iBaudRate, SerialPort_Parity eParity, int iDataBits, float fStopBits ) : 
+	m_spIOService(ioservice),
 	m_sPort(port),
 	m_iBaudRate(iBaudRate),
 	m_eParity(eParity),
 	m_iDataBits(iDataBits),
 	m_fStopBits(fStopBits)
 {
+	m_Port = boost::shared_ptr<boost::asio::serial_port>(new boost::asio::serial_port(*m_spIOService));
+	 
 	Init();
 }
 
@@ -226,31 +229,31 @@ void SerialPort::Connect()
 {
 	try
 	{
-		m_Port.open(m_sPort);
+		m_Port->open(m_sPort);
 	
-		if (!m_Port.is_open())
+		if (!m_Port->is_open())
 		{
 			EZLOGGERVLSTREAM(axter::log_rarely) << "Failed to open serial port - " << m_sPort <<"!"<< std::endl;
 		}
 
 		m_bConnected = true;
 
-		m_Port.set_option(boost::asio::serial_port::baud_rate(m_iBaudRate));
+		m_Port->set_option(boost::asio::serial_port::baud_rate(m_iBaudRate));
 		if (m_eParity == SP_PARITY_NONE)
-			m_Port.set_option(boost::asio::serial_port::parity(boost::asio::serial_port::parity::none));
+			m_Port->set_option(boost::asio::serial_port::parity(boost::asio::serial_port::parity::none));
 		else if (m_eParity == SP_PARITY_ODD)
-			m_Port.set_option(boost::asio::serial_port::parity(boost::asio::serial_port::parity::odd));
+			m_Port->set_option(boost::asio::serial_port::parity(boost::asio::serial_port::parity::odd));
 		else
-			m_Port.set_option(boost::asio::serial_port::parity(boost::asio::serial_port::parity::even));
+			m_Port->set_option(boost::asio::serial_port::parity(boost::asio::serial_port::parity::even));
 	
 		if (m_fStopBits == 1.0f)
-			m_Port.set_option(boost::asio::serial_port::stop_bits(boost::asio::serial_port::stop_bits::one));
+			m_Port->set_option(boost::asio::serial_port::stop_bits(boost::asio::serial_port::stop_bits::one));
 		else if (m_fStopBits < 2.0f)
-			m_Port.set_option(boost::asio::serial_port::stop_bits(boost::asio::serial_port::stop_bits::onepointfive));
+			m_Port->set_option(boost::asio::serial_port::stop_bits(boost::asio::serial_port::stop_bits::onepointfive));
 		else
-			m_Port.set_option(boost::asio::serial_port::stop_bits(boost::asio::serial_port::stop_bits::two));
+			m_Port->set_option(boost::asio::serial_port::stop_bits(boost::asio::serial_port::stop_bits::two));
 
-		m_Port.set_option(boost::asio::serial_port::character_size(m_iDataBits));
+		m_Port->set_option(boost::asio::serial_port::character_size(m_iDataBits));
 	}
 	catch (...)
 	{
@@ -269,13 +272,13 @@ void SerialPort::Init()
 
 void SerialPort::Close()
 {
-	m_IOService.post(boost::bind(&SerialPort::_CloseConnection, this));
+	m_spIOService->post(boost::bind(&SerialPort::_CloseConnection, this));
 }
 
 void SerialPort::_CloseConnection()
 {
 	//m_Port.shutdown();
-	m_Port.close();
+	m_Port->close();
 	m_bConnected = false;
 	m_bConnecting = false;
 }
@@ -297,7 +300,7 @@ void SerialPort::Send(std::string message)
 
 void SerialPort::_Send()
 {
-	boost::asio::async_write(m_Port, boost::asio::buffer(m_sMessage), boost::bind(&SerialPort::_SendHandler,this, boost::asio::placeholders::error));
+	boost::asio::async_write(*m_Port, boost::asio::buffer(m_sMessage), boost::bind(&SerialPort::_SendHandler,this, boost::asio::placeholders::error));
 }
 
 void SerialPort::_SendHandler(const boost::system::error_code& errorCode)
@@ -317,7 +320,7 @@ void SerialPort::_SendHandler(const boost::system::error_code& errorCode)
 /// TCP Server
 TCPServer::~TCPServer()
 { 
-	m_Acceptor.close(); 
+	//m_Acceptor.close(); 
 }
 
 /*
@@ -330,15 +333,14 @@ TCPServer& TCPServer::GetInstance()
 
 void TCPServer::Init()
 {
-	//m_IOService = NetworkConnection::m_IOService;
 	_ListenConnection();
 }
 
 void TCPServer::_ListenConnection()
 {
-	auto connection = boost::shared_ptr<TCPConnection>(new TCPConnection(m_IOService));
-	m_Acceptor.async_accept(connection->GetSocket(),
-        boost::bind(&TCPServer::_HandleAccept, shared_from_this(), connection,
+	auto connection = boost::shared_ptr<TCPConnection>(new TCPConnection(m_spIOService));
+	m_Acceptor->async_accept(connection->GetSocket(),
+        boost::bind(&TCPServer::_HandleAccept,shared_from_this(), connection,
           boost::asio::placeholders::error));
 }
 

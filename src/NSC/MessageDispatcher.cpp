@@ -67,7 +67,7 @@ MessageDispatcher::MessageDispatcher(std::string description)
 			EZLOGGERVLSTREAM(axter::log_always) << "Failed to initialize serial port - " << description <<". Incorrect format specified!"<< std::endl;
 		}
 
-		m_spPort = boost::shared_ptr<SerialPort>(new SerialPort(address,iBaudRate,eParity,iDataBits,fStopBits));
+		//m_spPort = boost::shared_ptr<SerialPort>(new SerialPort(address,iBaudRate,eParity,iDataBits,fStopBits));
 	}
 	else
 	{
