@@ -56,7 +56,8 @@ public:
 	void AddSubscriber(boost::shared_ptr<ConnectionInterface> subscriber);
 	void Distribute(); // this should be called every frame.
 
-	void LevelReset();
+	void ResetCounters();
+	void ResetCounter(std::string id);
 	
 private:
 

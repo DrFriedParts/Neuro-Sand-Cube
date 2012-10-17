@@ -271,7 +271,7 @@ void TCPConnection::_Receive()
 	if (m_bConnected)
 	{
 		/*m_Port->async_read_some()*/
-		boost::asio::async_read_until(m_Socket, buffer, "\r\n",
+		boost::asio::async_read_until(m_Socket, buffer, "}",
 			boost::bind(&TCPConnection::_ReceiveHandler, shared_from_this(),
 			boost::asio::placeholders::error,
 			boost::asio::placeholders::bytes_transferred));

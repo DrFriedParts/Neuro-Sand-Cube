@@ -30,5 +30,10 @@
           "from":["my_pc","vr_controller"],
           "route":["vr_controller"]
         }
+		,
+        { "id":"reset_counter",
+          "from":["vr_controller"],
+          "route":["vr_controller"]
+        }
     ]
 }

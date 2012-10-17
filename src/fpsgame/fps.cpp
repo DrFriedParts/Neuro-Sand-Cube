@@ -326,7 +326,7 @@ namespace game
 			{
 				d->state = CS_ALIVE;
 				// NSC functionality
-				d->levelRestart = true;
+				//d->levelRestart = true;
 			}
         }
         else d->state = CS_ALIVE;
@@ -619,6 +619,12 @@ namespace game
 
     void startmap(const char *name)   // called just after a map load
     {
+		if (player1 && player1->prevMap && name)
+		{
+			if (strcmp(player1->prevMap,name) == 0)
+				player1->levelRestart = true;
+		}
+		
         ai::savewaypoints();
         ai::clearwaypoints(true);
         for(int i = 0; i != 32767; i++)
@@ -631,7 +637,8 @@ namespace game
         else findplayerspawn(player1, -1);
         entities::resetspawns();
         copystring(clientmap, name ? name : "");
-
+		copystring(player1->prevMap, name ? name : "");
+		
         sendmapinfo();
     }
 

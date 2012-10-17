@@ -66,12 +66,7 @@ void NeuroSandCube::Initialize(fpsent* player)
 	distributor.AddState("level_restart",
 	[player] () -> State
 	{
-		static int count = 0;
-		if (player->levelRestart)
-			count++;
-		static bool prevValue;
-		bool restart = (count > 1)? player->levelRestart : false;
-		return State(restart);
+		return State(player->levelRestart);
 
 	}
 	);
@@ -142,7 +137,11 @@ void NeuroSandCube::Initialize(fpsent* player)
 	// setup command attributes
 
 	m_spCommandController->AddCommand("restart_map",
-		[player] () { game::spawnplayer(player); });
+		[player] (std::string target) { game::spawnplayer(player); });
+	m_spCommandController->AddCommand("reset_counter",
+		[player] (std::string target) { StateDistributor::GetInstance().ResetCounter(target); });
+
+	
 
 	i=0;
 	auto commandAttribute = configReader.GetCommandAttribute(i);
@@ -165,7 +164,7 @@ void NeuroSandCube::Update()
 	m_spCommandController->PollCommands();
 
 	if (player->levelRestart)
-		StateDistributor::GetInstance().LevelReset();
+		StateDistributor::GetInstance().ResetCounters();
 
 	StateDistributor::GetInstance().Distribute();
 	

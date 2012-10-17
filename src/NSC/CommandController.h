@@ -10,7 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-typedef std::function<void ()> CommandFunctor;
+typedef std::function<void (std::string)> CommandFunctor;
 
 struct CommandAttributes
 {

@@ -5,6 +5,9 @@
 #include <cctype>
 #include <locale>
 
+#include "../simplejson/JSON.h"
+#include "EZLogger.h"
+
 
 
 CommandController::CommandController(void)
@@ -43,6 +46,43 @@ void CommandController::AddCommand(std::string id, CommandFunctor f)
 void CommandController::Process(std::string source, std::string message)
 {
 	// commands can perform an effect on the game via the command functors ...
+
+	JSONValue *value = JSON::Parse(message.c_str());
+
+	std::string id,target;
+	if (value)
+	{
+		if (!value->IsObject())
+		{
+			EZLOGGERVLSTREAM(axter::log_always) << "Input from " << source << ": Object expected." <<  std::endl;
+		}
+		else
+		{
+			JSONObject object = value->AsObject();
+
+			JSONValue* jsonID = (object.find(L"id") != object.end())?  object[L"id"] : NULL;
+			JSONValue* jsonTarget = (object.find(L"target") != object.end())?  object[L"target"] : NULL;
+
+			if (jsonID != NULL && jsonID->IsString())
+			{
+				std::wstring ws = jsonID->AsString();
+				id  = std::string( ws.begin(), ws.end() );
+			}
+			else
+			{
+				EZLOGGERVLSTREAM(axter::log_always) << "Input from " << source << ": string id expected." <<  std::endl;
+			}
+
+			if (jsonTarget != NULL && jsonTarget->IsString())
+			{
+				std::wstring ws = jsonTarget->AsString();
+				target  = std::string( ws.begin(), ws.end() );
+			}
+		}
+	}
+	
+	delete value;
+
 	bool toSend = true;
 	auto clientCommandIter = clientCommands.find(source);
 
@@ -52,7 +92,7 @@ void CommandController::Process(std::string source, std::string message)
 		toSend = false;
 		for (auto i = clientCommandIter->second.begin(); i != clientCommandIter->second.end(); i++)
 		{
-			if (message.compare(*i) == 0 )
+			if (id.compare(*i) == 0 )
 			{
 				toSend = true;
 				break;
@@ -63,15 +103,15 @@ void CommandController::Process(std::string source, std::string message)
 	if (!toSend)
 		return;
 
-	auto commandIterator = commands.find(message);
+	auto commandIterator = commands.find(id);
 	if (commandIterator != commands.end())
 	{
 		// call the behavior
-		(commandIterator->second)();
+		(commandIterator->second)(target);
 	}
 
 	// ... and they can also be routed to other clients
-	auto configurationIter = commandConfigurations.find(message);
+	auto configurationIter = commandConfigurations.find(id);
 	if (configurationIter != commandConfigurations.end())
 	{
 		// a config exists, send to all in 'route'
@@ -84,7 +124,6 @@ void CommandController::Process(std::string source, std::string message)
 				auto clientConnection = *j;
 				if (clientConnection->id.compare(client) == 0)
 				{
-					
 					clientConnection->Send(message);
 				}
 			}
@@ -105,7 +144,7 @@ void CommandController::PollCommands()
 		if (connection->CanReceive())
 		{
 			std::string cmd = connection->Receive();
-			cmd.erase(std::find_if(cmd.rbegin(), cmd.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), cmd.end());
+			cmd.erase(std::remove_if(cmd.begin(), cmd.end(), std::isspace), cmd.end());
 			Process(connection->id, cmd);
 		}
 	}

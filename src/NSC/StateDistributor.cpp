@@ -155,9 +155,9 @@ void StateDistributor::FlushDistribution()
 			if (state->toBeDistributed)
 			{
 				if (state->attributes.delta)
-					builder.Add(state->attributes.id,boost::apply_visitor(State_tostring(), state->delta));
+					builder.Add(state->attributes.id,boost::apply_visitor(State_tostring(), state->delta),state->numChanges);
 				else
-					builder.Add(state->attributes.id,boost::apply_visitor(State_tostring(), state->value));
+					builder.Add(state->attributes.id,boost::apply_visitor(State_tostring(), state->value),state->numChanges);
 			}
 		}
 
@@ -171,11 +171,23 @@ void StateDistributor::FlushDistribution()
 	}
 }
 
-void StateDistributor::LevelReset()
+void StateDistributor::ResetCounters()
 {
 	for (unsigned int i =0; i < distributions.size(); ++i)
 	{
 		if (distributions[i]->attributes.resetOnRestart)
+		{
+			distributions[i]->numChanges = 0;
+		}
+	}
+}
+
+
+void StateDistributor::ResetCounter(std::string id)
+{
+	for (unsigned int i =0; i < distributions.size(); ++i)
+	{
+		if (distributions[i]->attributes.id.compare(id) == 0)
 		{
 			distributions[i]->numChanges = 0;
 		}
