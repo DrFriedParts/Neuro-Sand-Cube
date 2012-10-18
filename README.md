@@ -94,7 +94,7 @@ Player's y-coordinate in the VR world.
 
 ## player_left_click
 
-The left mouse button has been clicked! Sends both press (value = 1) and release (value = 0) events or button status.
+The left mouse button has been clicked! Value = 1
 
 ### Properties
 
@@ -103,7 +103,7 @@ The left mouse button has been clicked! Sends both press (value = 1) and release
        
 ## player_right_click
 
-The right mouse button has been clicked! Sends both press (value = 1) and release (value = 0) events or button status.
+The right mouse button has been clicked! Value = 1
 
 ### Properties
 
