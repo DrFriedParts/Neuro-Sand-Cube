@@ -88,7 +88,7 @@ Player's y-coordinate in the VR world.
 ### Properties
 
 * id -- ```player_y```
-* delta -- ```true``` -- Optional. On ```true``` the player_x value will express only the difference since the last transmission. On ```false``` the absolute value of the current player position will be sent.
+* delta -- ```true``` -- Optional. On ```true``` the player_y value will express only the difference since the last transmission. On ```false``` the absolute value of the current player position will be sent.
 
 
 
@@ -124,6 +124,26 @@ The mouse has teleported. Value = 1
 ### Properties
 
 * id -- ```teleport```
+
+## player_angle
+
+Player's angle around the VR world y-axis.
+
+### Properties
+
+* id -- ```player_angle```
+* delta -- ```true``` -- Optional. On ```true``` the player_angle value will express only the difference since the last transmission. On ```false``` the absolute value of the current player angle will be sent.
+
+## distance_traveled
+
+Player's total distance travelled from the start of the level.
+
+### Properties
+
+* id -- ```distance_traveled```
+* delta -- ```true``` -- Optional. On ```true``` the distance_traveled value will express only the difference since the last transmission. On ```false``` the absolute value of the current player angle will be sent.
+
+
 
 # INPUTS
 
