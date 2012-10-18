@@ -598,7 +598,7 @@ void keypress(int code, bool isdown, int cooked)
 {
     keym *haskey = keyms.access(code);
     if(haskey && haskey->pressed) execbind(*haskey, isdown); // allow pressed keys to release
-    else if(!UI::keypress(code, isdown, cooked)) // UI mouse button intercept
+    else if(!UI::keypress(code, isdown, cooked)) // UI 
     {
         if(commandmillis >= 0) consolekey(code, isdown, cooked);
         else if(haskey) execbind(*haskey, isdown);

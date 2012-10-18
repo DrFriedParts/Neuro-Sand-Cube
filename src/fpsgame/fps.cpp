@@ -362,6 +362,12 @@ namespace game
     }
     ICOMMAND(attack, "D", (int *down), { doattack(*down!=0); });
 
+	void setRightClick(bool on)
+    {
+        player1->rightClick = on;
+    }
+    ICOMMAND(zoom, "D", (int *down), { setRightClick(*down!=0); });
+
     bool canjump()
     {
         if(!intermission) respawn();

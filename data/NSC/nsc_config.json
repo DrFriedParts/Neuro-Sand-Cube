@@ -15,6 +15,20 @@
 			"interval":0 
 		},	
 		{
+			"id":"player_left_click", 
+			"consumers":["neurotrigger","vr_controller"],
+			"only_on_change":true, 
+			"reset_counter_on_restart":true, 
+			"interval":0 
+		},	
+		{
+			"id":"player_right_click", 
+			"consumers":["neurotrigger","vr_controller"],
+			"only_on_change":true, 
+			"reset_counter_on_restart":false, 
+			"interval":0 
+		},	
+		{
 			"id":"player_x", 
 			"consumers":["10.1.44.123"],
 			"only_on_change":true, 

@@ -727,6 +727,7 @@ struct fpsent : dynent, fpsstate
 	// TK: position where entity spawns
 	vec startingPosition;
 	bool levelRestart;
+	bool rightClick;
 	bool teleported;
 	char prevMap[512];
 
@@ -734,6 +735,7 @@ struct fpsent : dynent, fpsstate
     {
         name[0] = team[0] = info[0] = 0;
 		levelRestart = false;
+		rightClick = false;
 		teleported = false;
 		prevMap[0] = '\0';
         respawn();

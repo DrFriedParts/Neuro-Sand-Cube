@@ -103,6 +103,17 @@ void StateDistributor::Distribute()
 		boost::shared_ptr<StateDistribution> distribution = distributions[i];
 		distribution->value = distribution->valueFunction();
 		bool hasChanged = !(boost::apply_visitor(State_equals(), distribution->value , distribution->prevValue));
+		// this is a hack to get booleans to work differently to other variables - they should only transmit if they have just become true
+		// this is because the bools used so far are actually events and not bools at all. so this should be changed somehow soon
+		if (hasChanged && distribution->value.which() == 2) // == bool
+		{
+			if (boost::apply_visitor(State_equals(), distribution->value , State(false)))
+			{
+				hasChanged = false;
+				distribution->prevValue = State(false);
+			}
+		}
+			
 		
 		if ((distribution->attributes.onlyOnChange && hasChanged) || (distribution->framesPassedSinceDistribution >= distribution->attributes.interval && !distribution->attributes.onlyOnChange))
 		{
