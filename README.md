@@ -136,7 +136,7 @@ Player's angle around the VR world y-axis.
 
 ## distance_traveled
 
-Player's total distance travelled from the start of the level.
+Player's total distance traveled from the start of the level.
 
 ### Properties
 
