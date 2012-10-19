@@ -131,7 +131,7 @@ std::string JSONBuilder::Get(int framestamp)
 	Add("frame", s2);
 
 	ss = std::ostringstream();
-	ss << "[ " << message << " ]";
+	ss << "[ " << message << " ]\r\n";
 
 	std::string finalMessage(ss.str());
 
