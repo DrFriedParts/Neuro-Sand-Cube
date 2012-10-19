@@ -62,6 +62,12 @@ void NeuroSandCube::Initialize(fpsent* player)
 		return State(player->attacking);
 	}
 	);
+	distributor.AddState("player_right_click",
+	[player] ()
+	{
+		return State(player->rightClick);
+	}
+	);
 
 	distributor.AddState("level_restart",
 	[player] () -> State
@@ -137,7 +143,7 @@ void NeuroSandCube::Initialize(fpsent* player)
 	// setup command attributes
 
 	m_spCommandController->AddCommand("restart_map",
-		[player] (std::string target) { game::spawnplayer(player); });
+		[player] (std::string target) { game::startmap(player->prevMap); });
 	m_spCommandController->AddCommand("reset_counter",
 		[player] (std::string target) { StateDistributor::GetInstance().ResetCounter(target); });
 
