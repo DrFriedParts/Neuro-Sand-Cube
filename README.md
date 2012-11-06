@@ -3,13 +3,15 @@
 Configuration file is located at ```/data/NSC/nsc_config.json```. The overall format is an object with arrays-of-objects as properties. Each of these inner-most objects represents a single event or data value to provide or accept.
 
 ```json
-{ "outputs":
-    [
-        { "id":"consumers",
+{ 
+	"aliases":
+	{ 
           "vr_controller":"127.0.0.1",
           "my_pc":"10.16.1.45",
           "neurotrigger":"COM3:115200N81"
-        }
+    },
+	"outputs":
+    [
         {
           "id":"player_x", 
           "consumers":["COM3:115200N81", 127.0.0.1, "neurotrigger"]
@@ -33,11 +35,13 @@ Configuration file is located at ```/data/NSC/nsc_config.json```. The overall fo
 
 ```
 
-The ```id``` = ```consumers``` record specifies named aliases for destinations to facilitate easy maintainence of the configuration file is hosts change. ```consumers``` of other ```id```'s can be listed by COM port, IP address, or Alias.
+The ```aliases``` record specifies named aliases for destinations to facilitate easy maintainence of the configuration file is hosts change. ```consumers``` of other ```id```'s can be listed by COM port, IP address, or Alias.
 
 If a client is not listed in any ```consumers:``` property, then *all* configured outputs are sent to it. This is useful for connecting a console laptop for debugging monitoring.
 
 Similarly, if a client is not listed in any ```from:``` field, then *all* inputs are accepted from it. Same reason.
+
+If an input is sent by a client that is not one of the supported input commands (eg restart_map) it can still be routed to other clients if specified in the above configuration.
 
 # OUTPUTS
 
@@ -45,10 +49,9 @@ Response format for data outputs is typically:
 
 ```json
 [ 
-{ "id": "player_x", "value": 737.891  }, 
+{ "id": "player_x", "value": 737.891, "change_count": 5  }, 
 { "id": "timestamp", "value": "18:05:28.183"  }, 
 { "id": "frame", "value": 100444  }
-{ "id": "counter", "value": 3  }
 ]
 ```
 
@@ -85,13 +88,13 @@ Player's y-coordinate in the VR world.
 ### Properties
 
 * id -- ```player_y```
-* delta -- ```true``` -- Optional. On ```true``` the player_x value will express only the difference since the last transmission. On ```false``` the absolute value of the current player position will be sent.
+* delta -- ```true``` -- Optional. On ```true``` the player_y value will express only the difference since the last transmission. On ```false``` the absolute value of the current player position will be sent.
 
 
 
 ## player_left_click
 
-The left mouse button has been clicked! Sends both press (value = 1) and release (value = 0) events or button status.
+The left mouse button has been clicked! Value = 1
 
 ### Properties
 
@@ -100,7 +103,7 @@ The left mouse button has been clicked! Sends both press (value = 1) and release
        
 ## player_right_click
 
-The right mouse button has been clicked! Sends both press (value = 1) and release (value = 0) events or button status.
+The right mouse button has been clicked! Value = 1
 
 ### Properties
 
@@ -121,6 +124,26 @@ The mouse has teleported. Value = 1
 ### Properties
 
 * id -- ```teleport```
+
+## player_angle
+
+Player's angle around the VR world y-axis.
+
+### Properties
+
+* id -- ```player_angle```
+* delta -- ```true``` -- Optional. On ```true``` the player_angle value will express only the difference since the last transmission. On ```false``` the absolute value of the current player angle will be sent.
+
+## distance_traveled
+
+Player's total distance traveled from the start of the level.
+
+### Properties
+
+* id -- ```distance_traveled```
+* delta -- ```true``` -- Optional. On ```true``` the distance_traveled value will express only the difference since the last transmission. On ```false``` the absolute value of the current player angle will be sent.
+
+
 
 # INPUTS
 

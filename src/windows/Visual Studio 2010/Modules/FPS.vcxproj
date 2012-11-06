@@ -139,12 +139,13 @@
     </ClCompile>
     <ClCompile Include="..\..\..\fpsgame\waypoint.cpp" />
     <ClCompile Include="..\..\..\fpsgame\weapon.cpp" />
+    <ClCompile Include="..\..\..\NSC\CommandController.cpp" />
     <ClCompile Include="..\..\..\NSC\ConfigReader.cpp" />
-    <ClCompile Include="..\..\..\NSC\MessageDispatchController.cpp" />
-    <ClCompile Include="..\..\..\NSC\MessageDispatcher.cpp" />
+    <ClCompile Include="..\..\..\NSC\Connection.cpp" />
+    <ClCompile Include="..\..\..\NSC\ConnectionMediator.cpp" />
     <ClCompile Include="..\..\..\NSC\Networking.cpp" />
     <ClCompile Include="..\..\..\NSC\NeuroSandCube.cpp" />
-    <ClCompile Include="..\..\..\NSC\SharedStateDistributor.cpp" />
+    <ClCompile Include="..\..\..\NSC\StateDistributor.cpp" />
     <ClCompile Include="..\..\..\NSC\MessageBuilder.cpp" />
     <ClCompile Include="..\..\..\NSC\MessageBuilderFactory.cpp" />
     <ClCompile Include="..\..\..\shared\crypto.cpp" />
@@ -203,13 +204,16 @@
     <ClInclude Include="..\..\..\fpsgame\capture.h" />
     <ClInclude Include="..\..\..\fpsgame\ctf.h" />
     <ClInclude Include="..\..\..\fpsgame\extinfo.h" />
+    <ClInclude Include="..\..\..\NSC\CommandController.h" />
     <ClInclude Include="..\..\..\NSC\ConfigReader.h" />
+    <ClInclude Include="..\..\..\NSC\Connection.h" />
+    <ClInclude Include="..\..\..\NSC\ConnectionMediator.h" />
     <ClInclude Include="..\..\..\NSC\EZLogger.h" />
-    <ClInclude Include="..\..\..\NSC\MessageDispatchController.h" />
-    <ClInclude Include="..\..\..\NSC\MessageDispatcher.h" />
+    <ClInclude Include="..\..\..\NSC\Globals.h" />
     <ClInclude Include="..\..\..\NSC\Networking.h" />
     <ClInclude Include="..\..\..\NSC\NeuroSandCube.h" />
-    <ClInclude Include="..\..\..\NSC\SharedStateDistributor.h" />
+    <ClInclude Include="..\..\..\NSC\State.h" />
+    <ClInclude Include="..\..\..\NSC\StateDistributor.h" />
     <ClInclude Include="..\..\..\NSC\MessageBuilder.h" />
     <ClInclude Include="..\..\..\NSC\MessageBuilderFactory.h" />
     <ClInclude Include="..\..\..\simplejson\JSON.h" />

@@ -1,5 +1,6 @@
 #include "ConfigReader.h"
-#include "SharedStateDistributor.h"
+#include "State.h"
+#include "CommandController.h"
 
 #include "EZLogger.h"
 
@@ -15,20 +16,80 @@ void print_out(const char* output)
 	
 }
 
-void SharedStateConfigReader::ReadConfig(std::string file)
+void StateConfigReader::ReadConfig(std::string file)
 {
-
 	std::ifstream ifs(file);
 	std::string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 	
 	JSONValue *value = JSON::Parse(str.c_str());
-	
+
+	if (value != NULL)
+	{
+		JSONObject root;
+		if (value->IsObject() == false)
+		{
+			EZLOGGERVLSTREAM(axter::log_always) << "The root element is not an object, Incorrect format." <<  std::endl;
+		}
+		else
+		{
+			root = value->AsObject();
+			if (root.find(L"aliases") != root.end())
+			{
+				_ReadAliases(root[L"aliases"]);
+			}
+			if (root.find(L"outputs") != root.end())
+			{
+				_ReadOutputs(root[L"outputs"]);
+			}
+			if (root.find(L"inputs") != root.end())
+			{
+				_ReadInputs(root[L"inputs"]);
+			}
+		}
+		delete value;
+	}
+	else 
+	{
+		EZLOGGERVLSTREAM(axter::log_always) << "Failed to parse config file." <<  std::endl;
+	}
+
+}
+
+void StateConfigReader::_ReadAliases(JSONValue* value)
+{
+	if (value->IsObject())
+	{
+		JSONObject aliases = value->AsObject();
+		
+		for(auto iterator = aliases.begin(); iterator != aliases.end(); iterator++) 
+		{
+			std::string key = _WStringToString(iterator->first);
+			JSONValue* v = iterator->second;
+			if (v->IsString())
+			{
+				std::string val = _WStringToString(v->AsString());
+				m_Aliases[key] = val;
+			}
+			else
+			{
+				EZLOGGERVLSTREAM(axter::log_always) << "Alias format is 'String' : 'String' " <<  std::endl;
+			}
+		}
+	}
+	else
+	{
+		EZLOGGERVLSTREAM(axter::log_always) << "Aliases should be formatted as a JSON Object" <<  std::endl;
+	}
+}
+
+void StateConfigReader::_ReadInputs(JSONValue *value)
+{
 	if (value != NULL)
 	{
 		JSONArray root;
 		if (value->IsArray() == false)
 		{
-			EZLOGGERVLSTREAM(axter::log_always) << "The root element is not an array, Incorrect format." <<  std::endl;
+			EZLOGGERVLSTREAM(axter::log_always) << "Array of input states expected, Incorrect format." <<  std::endl;
 		}
 		else
 		{
@@ -41,8 +102,55 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 				}
 				else
 				{
-					boost::shared_ptr<SharedStateAttributes> attributes = boost::shared_ptr<SharedStateAttributes>(new SharedStateAttributes);
-					
+					JSONObject object = root[i]->AsObject();
+
+					JSONValue* id = (object.find(L"id") != object.end())?  object[L"id"] : NULL;
+					JSONValue* from = (object.find(L"from") != object.end())?  object[L"from"] : NULL;
+					JSONValue* route = (object.find(L"route") != object.end())?  object[L"route"] : NULL;
+
+					if (id != NULL && from != NULL)
+					{
+						auto attributes = boost::shared_ptr<CommandAttributes>(new CommandAttributes);
+						std::wstring ws = object[L"id"]->AsString();
+						attributes->id = std::string( ws.begin(), ws.end() );
+
+						attributes->from  = _ReadSources(from);
+						attributes->route = _ReadSources(route);
+
+						m_CommandConfig.push_back(attributes);
+					}
+					else
+					{
+						EZLOGGERVLSTREAM(axter::log_always) << "Input element: id and source expected." <<  std::endl;
+					}
+				}
+			}
+		}
+	}
+}
+
+void StateConfigReader::_ReadOutputs(JSONValue *value)
+{
+	if (value != NULL)
+	{
+		JSONArray root;
+		if (value->IsArray() == false)
+		{
+			EZLOGGERVLSTREAM(axter::log_always) << "Array of distribution states expected, Incorrect format." <<  std::endl;
+		}
+		else
+		{
+			root = value->AsArray();
+			for (unsigned int i = 0; i < root.size(); i++)
+			{	
+				if (!root[i]->IsObject())
+				{
+					EZLOGGERVLSTREAM(axter::log_always) << "Array element: Object expected." <<  std::endl;
+				}
+				else
+				{
+					boost::shared_ptr<StateAttributes> attributes = boost::shared_ptr<StateAttributes>(new StateAttributes);
+
 					JSONObject object = root[i]->AsObject();
 					if (object.find(L"id") != object.end())
 					{
@@ -58,34 +166,11 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 							return;
 						}
 					}
-					
+
 
 					if (object.find(L"consumers") != object.end())
 					{
-						if (object[L"consumers"]->IsArray())
-						{
-							JSONArray consumerArray = object[L"consumers"]->AsArray();
-							std::vector<std::string> consumers;
-							for (unsigned int j = 0; j < consumerArray.size(); j++)
-							{
-								if (!consumerArray[j]->IsString())
-								{
-									EZLOGGERVLSTREAM(axter::log_always) << "'consumers' element : String expected." <<  std::endl;
-									delete value;
-									return;
-								}
-								std::wstring ws = consumerArray[j]->AsString();
-								consumers.push_back(std::string( ws.begin(), ws.end()));
-							}
-						
-							attributes->consumers = consumers;
-						}
-						else
-						{
-							EZLOGGERVLSTREAM(axter::log_always) << "'consumers' : Array expected." <<  std::endl;
-							delete value;
-							return;
-						}
+						attributes->consumers =  _ReadSources(object[L"consumers"]);
 					}
 
 					if (object.find(L"only_on_change") != object.end() )
@@ -114,7 +199,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 
 					if (object.find(L"interval") != object.end())
 					{
-					
+
 						if (object[L"interval"]->IsNumber())
 							attributes->interval = object[L"interval"]->AsNumber();
 						else
@@ -127,7 +212,7 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 
 					if (object.find(L"delta") != object.end())
 					{
-					
+
 						if (object[L"delta"]->IsBool())
 							attributes->delta = object[L"delta"]->AsBool();
 						else
@@ -143,20 +228,60 @@ void SharedStateConfigReader::ReadConfig(std::string file)
 			}
 
 		}
-
-		delete value;
-	}
-	else 
-	{
-		EZLOGGERVLSTREAM(axter::log_always) << "Failed to parse config file." <<  std::endl;
+		//delete value;
 	}
 }
 
-boost::shared_ptr<SharedStateAttributes> SharedStateConfigReader::Get(int i)
+std::vector<std::string> StateConfigReader::_ReadSources(JSONValue* value)
+{
+	std::vector<std::string> sources;
+	if (value && value->IsArray())
+	{
+		JSONArray sourceArray = value->AsArray();
+		
+		for (unsigned int j = 0; j < sourceArray.size(); j++)
+		{
+			if (!sourceArray[j]->IsString())
+			{
+				EZLOGGERVLSTREAM(axter::log_always) << "'source' element : String expected." <<  std::endl;
+			}
+			else
+			{
+				std::wstring ws = sourceArray[j]->AsString();
+				std::string source = std::string( ws.begin(), ws.end());
+
+				// check if this is an alias, if so insert the fully qualified address
+				auto iterator = m_Aliases.find(source);
+				if (iterator != m_Aliases.end())
+					sources.push_back(m_Aliases[source]);
+				else
+					sources.push_back(source);
+			}
+		}
+	}
+	else
+	{
+		EZLOGGERVLSTREAM(axter::log_always) << "'sources' : Array expected." <<  std::endl;
+	}
+	return sources;
+}
+
+boost::shared_ptr<StateAttributes> StateConfigReader::GetStateAttribute(int i)
 {
 
 	if (i>= 0 && i < config.size())
 		return config[i];
 	else
-		return boost::shared_ptr<SharedStateAttributes>();
+		return boost::shared_ptr<StateAttributes>();
 }
+
+boost::shared_ptr<CommandAttributes> StateConfigReader::GetCommandAttribute(int i)
+{
+
+	if (i>= 0 && i < m_CommandConfig.size())
+		return m_CommandConfig[i];
+	else
+		return boost::shared_ptr<CommandAttributes>();
+}
+
+

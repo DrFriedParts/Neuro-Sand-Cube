@@ -10,28 +10,42 @@
 #include <iostream>
 #include <time.h>
 #include <vector>
+#include <map>
 
 #include <boost/shared_ptr.hpp>
 
-struct SharedStateAttributes;
+// forward declares
+struct StateAttributes;
+struct CommandAttributes;
 
 // Reads the config file
-// extracts all necessary shared state to be streamed somewhere
-// and adds them to SharedStateController 
-class SharedStateConfigReader
+// reads consumer aliases
+// reads list of states to send to specific consumers
+// reads list of input commands executable by consumer
+
+class StateConfigReader
 {
 public:
-	SharedStateConfigReader() { }
-	~SharedStateConfigReader() { }
-
+	StateConfigReader() { }
+	~StateConfigReader() { }
 	void ReadConfig(std::string);
 
-	boost::shared_ptr<SharedStateAttributes> Get(int i);
-
-
+	boost::shared_ptr<StateAttributes> GetStateAttribute(int i);
+	boost::shared_ptr<CommandAttributes> GetCommandAttribute(int i);
+	
 private:
+	
+	void _ReadAliases(JSONValue* value);
+	void _ReadInputs(JSONValue *value);
+	void _ReadOutputs(JSONValue *value);
 
-	std::vector<boost::shared_ptr<SharedStateAttributes> > config;
+	std::vector<std::string> _ReadSources(JSONValue* value); 
+
+	std::string _WStringToString(std::wstring wstr) { return std::string( wstr.begin(), wstr.end()); };
+
+	std::map<std::string, std::string> m_Aliases;
+	std::vector<boost::shared_ptr<StateAttributes> > config;
+	std::vector<boost::shared_ptr<CommandAttributes> > m_CommandConfig;
 
 };
 

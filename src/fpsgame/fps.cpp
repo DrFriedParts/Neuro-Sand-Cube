@@ -5,7 +5,8 @@
 namespace NSC
 {
 
-	NeuroSandCube nsc;
+	boost::shared_ptr<NeuroSandCube> nsc;
+
 
 }
 
@@ -306,10 +307,8 @@ namespace game
         }
 
 
-		// DO NCS UPDATE HERE
-
-
-		NSC::nsc.Update();
+		// NSC
+		NSC::nsc->Update();
 
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
 
@@ -323,9 +322,15 @@ namespace game
         if(d==player1)
         {
             if(editmode) d->state = CS_EDITING;
-            else if(d->state != CS_SPECTATOR) d->state = CS_ALIVE;
+            else if(d->state != CS_SPECTATOR) 
+			{
+				d->state = CS_ALIVE;
+				// NSC functionality
+				//d->levelRestart = true;
+			}
         }
         else d->state = CS_ALIVE;
+
     }
 
     VARP(spawnwait, 0, 0, 1000);
@@ -356,6 +361,12 @@ namespace game
         if((player1->attacking = on)) respawn();
     }
     ICOMMAND(attack, "D", (int *down), { doattack(*down!=0); });
+
+	void setRightClick(bool on)
+    {
+        player1->rightClick = on;
+    }
+    ICOMMAND(zoom, "D", (int *down), { setRightClick(*down!=0); });
 
     bool canjump()
     {
@@ -535,8 +546,11 @@ namespace game
 
     void initclient()
     {
+		NSC::nsc = boost::shared_ptr<NeuroSandCube>(new NeuroSandCube());
         player1 = spawnstate(new fpsent);
         players.add(player1);
+
+		NSC::nsc->Initialize(player1);
     }
 
     VARP(showmodeinfo, 0, 1, 1);
@@ -605,12 +619,18 @@ namespace game
 		// Init neuro sand cube
 
 		player1->startingPosition = player1->o;
-		NSC::nsc.Initialize(player1);
+		
 
     }
 
     void startmap(const char *name)   // called just after a map load
     {
+		if (player1 && player1->prevMap && name)
+		{
+			if (strcmp(player1->prevMap,name) == 0)
+				player1->levelRestart = true;
+		}
+		
         ai::savewaypoints();
         ai::clearwaypoints(true);
         for(int i = 0; i != 32767; i++)
@@ -623,7 +643,8 @@ namespace game
         else findplayerspawn(player1, -1);
         entities::resetspawns();
         copystring(clientmap, name ? name : "");
-
+		copystring(player1->prevMap, name ? name : "");
+		
         sendmapinfo();
     }
 

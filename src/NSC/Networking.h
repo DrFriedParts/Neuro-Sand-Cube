@@ -4,79 +4,75 @@
 #include <string>
 
 #include <map>
+#include <queue>
 #include <boost/bind.hpp>
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
+#include "StateDistributor.h"
+//#include "ConnectionMediator.h"
+
 using boost::asio::ip::tcp;
 
-class NetworkPort
+class ConnectionMediator;
+
+
+class IOService
 {
 public:
-	NetworkPort() :
-		m_bConnected(false),
-		m_bConnecting(false) { };
-
-	~NetworkPort() { };
-
-	virtual void Init() = 0; 
-	virtual void Connect()= 0;
-	virtual void Close()= 0;
-	virtual void Send(std::string)= 0;
-
-	static void Update() { m_IOService.poll(); m_IOService.reset(); }// this will probably be moved somehwere to some network manager or something - just getting by
-	static boost::asio::io_service m_IOService;
-protected:
+	IOService()  
+	{
+		m_IOService = boost::shared_ptr<boost::asio::io_service>(new boost::asio::io_service);
+	};
 	
-	
-	
-	bool m_bConnected;
-	bool m_bConnecting;
+	~IOService() { };
 
+	void Update() { m_IOService->poll(); m_IOService->reset(); }
+
+	boost::shared_ptr<boost::asio::io_service> m_IOService;
 	
-	std::string m_sMessage;
+
+private:
 
 };
 
-// basic networking classes used for transmission of plain text messages over tcp
-/*
-class TCPClient : public NetworkPort
+
+
+
+class NetworkConnection
 {
 public:
-	TCPClient(std::string ip, std::string port);
-	~TCPClient();
+	NetworkConnection() :
+	  m_bConnected(false),
+		  m_bConnecting(false) { };
 
-	void Init(); // resolve address & connect
-	void Connect();
-	void Close();
-	void Send(std::string);
+	  ~NetworkConnection() { };
+
+	  virtual void Init() = 0; 
+	  virtual void Connect()= 0;
+	  virtual void Close()= 0;
+	  virtual void Send(std::string)= 0;
+	  bool HasReceived()  { return receiveQueue.size() > 0 ;}
+	  std::string Receive();
 
 protected:
-	void _ConnectHandler(const boost::system::error_code& errorCode);
 
-	void _SendHeader();
-	void _SendHeaderHandler(const boost::system::error_code& errorCode);
-	void _Send();
-	void _SendHandler(const boost::system::error_code& errorCode);
-	void _CloseConnection();
-
-	void _ResolveAddress();
-	void _ResolveAddressAsync();
-	void _ResolveAddressHandler(const boost::system::error_code& err, tcp::resolver::iterator endpoint_iterator);	
-
-
-	tcp::socket m_Socket;
-
-	tcp::resolver::iterator m_EndPointIteratorBegin;
-	tcp::resolver::iterator m_EndPointIterator;
+	virtual void _Receive() { };
 	
-	std::string m_sAddress;
-	std::string m_sPort;
-	
-	bool m_bAddressResolved;
 
-};*/
+	bool m_bConnected;
+	bool m_bConnecting;
+
+	std::string m_sMessage;
+
+	std::queue<std::string> receiveQueue;
+	char receiveBuffer[512];
+	boost::asio::streambuf buffer;
+
+
+};
+
 
 enum SerialPort_Parity
 {
@@ -85,10 +81,10 @@ enum SerialPort_Parity
 	SP_PARITY_EVEN
 };
 
-class SerialPort: public NetworkPort
+class SerialPort: public NetworkConnection, public boost::enable_shared_from_this<SerialPort>
 {
 public:
-	SerialPort(std::string port, int iBaudRate, SerialPort_Parity eParity, int iDataBits, float fStopBits );
+	SerialPort(boost::shared_ptr<boost::asio::io_service>, std::string port, int iBaudRate, SerialPort_Parity eParity, int iDataBits, float fStopBits );
 	~SerialPort();
 
 	void Init(); 
@@ -98,11 +94,16 @@ public:
 
 protected:
 
+	virtual void _Receive();
+	void _ReceiveHandler(const boost::system::error_code& error,size_t bytes_transferred);
+
 	void _Send();
 	void _SendHandler(const boost::system::error_code& errorCode);
 	void _CloseConnection();
 
-	boost::asio::serial_port m_Port;
+	boost::shared_ptr<boost::asio::serial_port> m_Port;
+
+	boost::shared_ptr<boost::asio::io_service> m_spIOService;
 	
 	std::string m_sPort;
 
@@ -113,16 +114,16 @@ protected:
 
 };
 
-class TCPConnection : public NetworkPort, public boost::enable_shared_from_this<TCPConnection>
+class TCPConnection : public NetworkConnection, public boost::enable_shared_from_this<TCPConnection>
 {
 public:
-	TCPConnection(boost::asio::io_service& IOService) :
-		m_bConnected(false),
-		m_bConnecting(false),
-		m_Socket(IOService),
-		m_IOService( IOService) { };
+	TCPConnection(boost::shared_ptr<boost::asio::io_service> ioservice) :
+	  m_bConnected(false),
+		  m_bConnecting(false),
+		  m_Socket(*ioservice),
+		  m_IOService(ioservice) { };
 
-	~TCPConnection() { };
+	~TCPConnection();
 
 	virtual void Init() ; 
 	virtual void Connect();
@@ -133,7 +134,10 @@ public:
 	std::string GetAddres();
 
 protected:
-	
+	virtual void _Receive();
+	void _ReceiveHandler(const boost::system::error_code& error,size_t bytes_transferred);
+
+
 	void _SendHeader();
 	void _SendHeaderHandler(const boost::system::error_code& errorCode);
 	void _Send();
@@ -156,39 +160,48 @@ protected:
 	std::string m_sAddress;
 	std::string m_sPort;
 
-	boost::asio::io_service& m_IOService;
+	boost::shared_ptr<boost::asio::io_service> m_IOService;
 
 };
 
-// implement if needed
-class TCPServer
+
+class TCPServer : public boost::enable_shared_from_this<TCPServer>
 {
 public:
-	TCPServer(/*boost::asio::io_service& IOService,*/ int port) : 
-		m_IOService(NetworkPort::m_IOService),
-		m_Acceptor(NetworkPort::m_IOService, tcp::endpoint(tcp::v4(), port)) 
+	TCPServer(boost::shared_ptr<boost::asio::io_service> ioservice, int port, ConnectionMediator& mediator) : m_Mediator(mediator),
+		m_spIOService(ioservice)
+		//m_Acceptor(NetworkConnection::m_IOService, tcp::endpoint(tcp::v4(), port)) 
 	{
-		Init();
+		
+		m_Acceptor = boost::shared_ptr<tcp::acceptor>(new tcp::acceptor(*m_spIOService, tcp::endpoint(tcp::v4(), port))); 
+		
 	}
+
 
 	void Init();
 		
-	~TCPServer() { }
+	~TCPServer();
 
 	void Send(std::string description, std::string message);
-
-	//static void Update() { m_IOService.poll(); m_IOService.reset(); }// this will probably be moved somehwere to some network manager or something - just getting by
+	
 
 private:
-
+	void _ListenConnection();
 	void _HandleAccept(boost::shared_ptr<TCPConnection> connection, const boost::system::error_code& error);
 
-	tcp::acceptor m_Acceptor;
 
+	ConnectionMediator& m_Mediator;
+
+	boost::shared_ptr<boost::asio::io_service> m_spIOService;
 	std::map<std::string, boost::shared_ptr<TCPConnection> > m_Connections;
+	boost::shared_ptr<tcp::acceptor> m_Acceptor;
 
-	boost::asio::io_service& m_IOService;
+};
 
+struct NetworkSubscriber: public StateSubscriber
+{
+	virtual void Send(std::string);
+	boost::shared_ptr<NetworkConnection> m_Connection;
 };
 
 

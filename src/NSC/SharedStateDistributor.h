@@ -11,6 +11,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/variant.hpp>
 
+#include "Globals.h"
+
 
 typedef boost::variant<int, float, bool> SharedState;				// shared states can be int, float, or bool. others can be added but this is fine for now
 typedef std::function<SharedState ()> SharedStateFunctor;
@@ -41,19 +43,21 @@ struct SharedStateAttributes
 	std::vector<std::string> consumers;
 };
 
+
+
 class SharedState_equals : public boost::static_visitor<bool>
 {
 public:
     template <typename T, typename U>
-    bool operator()( const T &, const U & ) const
+    bool operator()( const T &lhs, const U &rhs ) const
     {
-        return false; // cannot compare different types
+        return lhs == rhs; // cannot compare different types
     }
 
     template <typename T>
     bool operator()( const T & lhs, const T & rhs ) const
     {
-        return lhs == rhs;
+        return (abs(lhs - rhs) < (EPSILON));
     }
 
 };
@@ -126,6 +130,8 @@ public:
 	void AddSharedState(std::string id, SharedStateFunctor);
 	bool AddDistribution(SharedStateAttributes attributes);
 	void Distribute(); // this should be called every frame.
+
+	void LevelReset();
 	
 private:
 
