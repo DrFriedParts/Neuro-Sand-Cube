@@ -3,7 +3,7 @@
 	{ 	
         "vr_controller":"127.0.0.1",
         "my_pc":"10.16.1.45",
-        "neurotrigger":"COM3:115200N81"
+        "neurotrigger":"COM5:115200N81"
     },
 	"outputs" :
 	[	
