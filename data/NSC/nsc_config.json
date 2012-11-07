@@ -30,7 +30,25 @@
 		},	
 		{
 			"id":"player_x", 
-			"consumers":["10.1.44.123"],
+			"consumers":["vr_controller"],
+			"only_on_change":true, 
+			"interval":0 
+		},
+		{
+			"id":"player_y", 
+			"consumers":["vr_controller"],
+			"only_on_change":true, 
+			"interval":0 
+		},
+		{
+			"id":"player_angle", 
+			"consumers":["vr_controller"],
+			"only_on_change":true, 
+			"interval":0 
+		},
+		{
+			"id":"distance_traveled", 
+			"consumers":["vr_controller"],
 			"only_on_change":true, 
 			"interval":0 
 		}
@@ -40,11 +58,13 @@
         { "id":"restart_map",
           "from":["vr_controller","neurotrigger"]
         },
+	{ "id":"level_restart",
+	  "from":["vr_controller"]
+	},
         { "id":"flush_water_reward",
           "from":["my_pc","vr_controller"],
           "route":["vr_controller"]
-        }
-		,
+        },
         { "id":"reset_counter",
           "from":["vr_controller"],
           "route":["vr_controller"]
