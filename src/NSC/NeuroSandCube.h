@@ -20,9 +20,11 @@ public:
 	boost::shared_ptr<StateSubscriber> CreateSerialPort(std::string);
 	void Update();
 
-	void ResetFrame();		
+			
 
 private:
+	void ResetLevel();
+	void ResetFrame();
 
 	//StateDistributor& distributor;
 	fpsent* player;
