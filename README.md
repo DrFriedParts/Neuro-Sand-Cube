@@ -143,6 +143,13 @@ Player's total distance traveled from the start of the level.
 * id -- ```distance_traveled```
 * delta -- ```true``` -- Optional. On ```true``` the distance_traveled value will express only the difference since the last transmission. On ```false``` the absolute value of the current player angle will be sent.
 
+## reward_issued
+
+Indicates whether a reward has been issued. If routed to neurotrigger, this will cause the reward to be released.
+
+### Properties
+
+* id -- ```reward_issued```
 
 
 # INPUTS
@@ -201,6 +208,14 @@ Restarts the current map
 
 * id -- ```restart_map```
 
+## issue_reward
+
+Triggers the ```reward_issued``` event
+
+### Properties
+
+* id -- ```issue_reward```
+
 ## reset_counter
 
 Restarts the occurance counter on the specified output
@@ -217,3 +232,29 @@ Any ```id``` that isn't specifically ennumerated above (e.g. given a specific ac
 ### Properties
 
 * id -- ```<anything else not listed above>```
+
+
+# CUBE2 scripting extensions
+
+The following extensions have been made to the CUBE2 scripting interface:
+
+## Additional attributes
+
+### invmousex
+
+```invmousex``` inverts the mouse x-axis, as the CUBE2 attribute ```invmouse``` does for the y-axis.
+
+## Additional commands
+
+### issue_reward
+The ```issue_reward``` script command triggers the Neuro-Sand-Cube ```reward_issued``` event.  
+
+Some examples of how to use this in a trigger, when placed in a map configuration file:
+* level_trigger_1 = [issue_reward]
+
+The above will simply trigger the ```reward_issued``` event when the trigger is activated.
+
+* level_trigger_1 = [issue_reward ; map newtrain_2LR]
+The above will trigger the ```reward_issued``` event when the trigger is activated, and thereafter load the map specified by ```newtrain_2LR```.
+
+TEMPORARY NOTE: at present, when ```issue_reward``` is triggered, instead of sending ```reward_issued``` to the serial port, it will send ```level_restart``` so that the reward system keeps functioning until the firmware is upgraded. You should however remove neurotrigger from the list of consumers for ```level_restart``` (it will still receive the ```level_restart``` caused by the ```issue_reward``` event) in order to avoid rewards occurring for map restarts. 

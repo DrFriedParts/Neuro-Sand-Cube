@@ -9,7 +9,6 @@
 #include <boost/foreach.hpp>
 
 
-
 NeuroSandCube::NeuroSandCube(void)
 {
 	StateDistributor::GetInstance();
@@ -30,6 +29,8 @@ void NeuroSandCube::Initialize(fpsent* player)
 	m_spServer->Init();
 
 	this->player = player;
+
+	bRewardIssued = false;
 
 	std::string configFile = "data/NSC/nsc_config.json";
 
@@ -85,6 +86,14 @@ void NeuroSandCube::Initialize(fpsent* player)
 	);
 
 	distributor.AddState("distance_traveled",
+	[player] () -> State
+	{
+		player->distance_traveled += player->deltapos.magnitude();
+		return State( player->distance_traveled);
+	}
+	);
+
+	distributor.AddState("distance_from_start",
 	[player] ()
 	{
 		return State( player->newpos.dist(player->startingPosition));
@@ -97,6 +106,12 @@ void NeuroSandCube::Initialize(fpsent* player)
 		return State(player->teleported);
 	}
 	);
+
+	distributor.AddState("reward_issued",
+	[this] () -> State
+	{
+		return State(bRewardIssued);
+	});
 
 
 	StateConfigReader configReader;
@@ -146,6 +161,8 @@ void NeuroSandCube::Initialize(fpsent* player)
 		[player] (std::string target) { game::startmap(player->prevMap); });
 	m_spCommandController->AddCommand("reset_counter",
 		[player] (std::string target) { StateDistributor::GetInstance().ResetCounter(target); });
+	m_spCommandController->AddCommand("issue_reward",
+		[this] (std::string target) { bRewardIssued = true; });
 
 	
 
@@ -170,7 +187,9 @@ void NeuroSandCube::Update()
 	m_spCommandController->PollCommands();
 
 	if (player->levelRestart)
-		StateDistributor::GetInstance().ResetCounters();
+	{
+		ResetLevel();
+	}
 
 	StateDistributor::GetInstance().Distribute();
 	
@@ -180,11 +199,23 @@ void NeuroSandCube::Update()
 	
 }
 
+void NeuroSandCube::ResetLevel()
+{
+	StateDistributor::GetInstance().ResetCounters();
+	player->distance_traveled = 0.0f;
+}
+
 void NeuroSandCube::ResetFrame()
 {
 	
 	player->levelRestart = false;
 	player->teleported = false;
+	bRewardIssued = false;
+}
+
+void NeuroSandCube::IssueReward()
+{
+	bRewardIssued = true;
 }
 
 

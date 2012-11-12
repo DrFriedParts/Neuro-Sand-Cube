@@ -726,6 +726,7 @@ struct fpsent : dynent, fpsstate
 
 	// TK: position where entity spawns
 	vec startingPosition;
+	float distance_traveled;
 	bool levelRestart;
 	bool rightClick;
 	bool teleported;
@@ -738,6 +739,7 @@ struct fpsent : dynent, fpsstate
 		rightClick = false;
 		teleported = false;
 		prevMap[0] = '\0';
+		distance_traveled = 0.0f;
         respawn();
     }
     ~fpsent()
