@@ -165,10 +165,17 @@ void StateDistributor::FlushDistribution()
 			auto state = *iterator;
 			if (state->toBeDistributed)
 			{
+				// TK: HACK : temporary hack to let the neurotrigger firmware still issue rewards, this will be removed as soon as the firmware is updated
+				std::string id = state->attributes.id;
+				if (subscriber->id.substr(0,3).compare("COM") == 0)
+				{
+					if (id.compare("reward_issued") == 0)
+						id = "level_restart";
+				}
 				if (state->attributes.delta)
-					builder.Add(state->attributes.id,boost::apply_visitor(State_tostring(), state->delta),state->numChanges);
+					builder.Add(id,boost::apply_visitor(State_tostring(), state->delta),state->numChanges);
 				else
-					builder.Add(state->attributes.id,boost::apply_visitor(State_tostring(), state->value),state->numChanges);
+					builder.Add(id,boost::apply_visitor(State_tostring(), state->value),state->numChanges);
 			}
 		}
 

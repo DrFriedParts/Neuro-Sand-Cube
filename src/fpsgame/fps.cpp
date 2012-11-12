@@ -4,11 +4,19 @@
 
 namespace NSC
 {
-
 	boost::shared_ptr<NeuroSandCube> nsc;
-
-
 }
+
+
+// ADDITIONAL CUBE2 COMMANDS AND VARS
+
+void issueReward()
+{
+	NSC::nsc->IssueReward();
+}
+
+ICOMMAND(issue_reward, "", (), issueReward());
+
 
 namespace game
 {

@@ -20,6 +20,8 @@ public:
 	boost::shared_ptr<StateSubscriber> CreateSerialPort(std::string);
 	void Update();
 
+	void IssueReward();
+
 			
 
 private:
@@ -33,5 +35,7 @@ private:
 	boost::shared_ptr<TCPServer> m_spServer; 
 	boost::shared_ptr<IOService> m_spIOService;
 	boost::shared_ptr<CommandController> m_spCommandController;
+
+	bool bRewardIssued;
 };
 

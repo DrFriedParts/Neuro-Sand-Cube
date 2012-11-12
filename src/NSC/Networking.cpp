@@ -108,6 +108,7 @@ void SerialPort::_CloseConnection()
 	
 void SerialPort::Send(std::string message)
 {
+	
 	if (m_bConnected)
 	{
 		m_sMessage = message;

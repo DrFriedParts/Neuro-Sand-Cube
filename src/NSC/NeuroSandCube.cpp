@@ -9,7 +9,6 @@
 #include <boost/foreach.hpp>
 
 
-
 NeuroSandCube::NeuroSandCube(void)
 {
 	StateDistributor::GetInstance();
@@ -30,6 +29,8 @@ void NeuroSandCube::Initialize(fpsent* player)
 	m_spServer->Init();
 
 	this->player = player;
+
+	bRewardIssued = false;
 
 	std::string configFile = "data/NSC/nsc_config.json";
 
@@ -106,6 +107,12 @@ void NeuroSandCube::Initialize(fpsent* player)
 	}
 	);
 
+	distributor.AddState("reward_issued",
+	[this] () -> State
+	{
+		return State(bRewardIssued);
+	});
+
 
 	StateConfigReader configReader;
 
@@ -154,6 +161,8 @@ void NeuroSandCube::Initialize(fpsent* player)
 		[player] (std::string target) { game::startmap(player->prevMap); });
 	m_spCommandController->AddCommand("reset_counter",
 		[player] (std::string target) { StateDistributor::GetInstance().ResetCounter(target); });
+	m_spCommandController->AddCommand("issue_reward",
+		[this] (std::string target) { bRewardIssued = true; });
 
 	
 
@@ -201,6 +210,12 @@ void NeuroSandCube::ResetFrame()
 	
 	player->levelRestart = false;
 	player->teleported = false;
+	bRewardIssued = false;
+}
+
+void NeuroSandCube::IssueReward()
+{
+	bRewardIssued = true;
 }
 
 
