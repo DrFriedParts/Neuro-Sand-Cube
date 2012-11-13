@@ -631,13 +631,18 @@ namespace game
 
     }
 
+
+
     void startmap(const char *name)   // called just after a map load
     {
+		player1->timeSinceMapStart = lastmillis;
 		if (player1 && player1->prevMap && name)
 		{
 			if (strcmp(player1->prevMap,name) == 0)
 				player1->levelRestart = true;
 		}
+
+		entities::resettriggers();
 		
         ai::savewaypoints();
         ai::clearwaypoints(true);
