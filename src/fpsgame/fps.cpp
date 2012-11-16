@@ -636,6 +636,15 @@ namespace game
     void startmap(const char *name)   // called just after a map load
     {
 		player1->timeSinceMapStart = lastmillis;
+
+		// temp check to make sure it is only newtrain_ maps that register for this.
+		// in future, either check a directory for all maps, or have a list where
+		// the user enters all maps
+		std::string s;
+		if (name)
+			s = std::string(name);
+		if (s.find("newtrain") != std::string::npos)
+			player1->levelStart = true;
 		if (player1 && player1->prevMap && name)
 		{
 			if (strcmp(player1->prevMap,name) == 0)

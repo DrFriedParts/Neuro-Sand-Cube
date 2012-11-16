@@ -500,11 +500,15 @@ namespace entities
     void doleveltrigger(int trigger, int state)
     {
 		// NSC - HACK to make triggers not fire immediately on map start
+		
 		if (abs(player1->timeSinceMapStart-lastmillis) < 50)
 		{
 			
 			return;
 		}
+
+		player1->trigger = trigger;
+
         defformatstring(aliasname)("level_trigger_%d", trigger);
         if(identexists(aliasname))
         {

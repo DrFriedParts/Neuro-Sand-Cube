@@ -113,6 +113,24 @@ void NeuroSandCube::Initialize(fpsent* player)
 		return State(bRewardIssued);
 	});
 
+	distributor.AddState("trial_start",
+	[player] () -> State
+	{
+		return State(player->levelStart);
+	});
+
+	distributor.AddState("correct_trial",
+	[player] () -> State
+	{
+		return State(player->trigger == 1);
+	});
+
+	distributor.AddState("incorrect_trial",
+	[player] () -> State
+	{
+		return State(player->trigger == 2);
+	});
+
 
 	StateConfigReader configReader;
 
@@ -207,7 +225,8 @@ void NeuroSandCube::ResetLevel()
 
 void NeuroSandCube::ResetFrame()
 {
-	
+	player->trigger = -1;
+	player->levelStart = false;
 	player->levelRestart = false;
 	player->teleported = false;
 	bRewardIssued = false;
