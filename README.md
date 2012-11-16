@@ -143,6 +143,31 @@ Player's total distance traveled from the start of the level.
 * id -- ```distance_traveled```
 * delta -- ```true``` -- Optional. On ```true``` the distance_traveled value will express only the difference since the last transmission. On ```false``` the absolute value of the current player angle will be sent.
 
+## trial_start
+
+Indicates that a trial has started.  At the moment, a trial map is determined to be any map that contains the word 'newtrain'.  This will be 
+made more flexible in the near future.
+
+### Properties
+
+* id -- ```trial_start```
+
+## correct_trial
+
+Indicates whether a trial has been performed correctly.  A trial is marked as correct if the player reaches ```level_trigger_1```.
+
+### Properties
+
+* id -- ```correct_trial```
+
+## incorrect_trial
+
+Indicates whether a trial has been performed incorrectly.  A trial is marked as incorrect if the player reaches ```level_trigger_2```.
+
+### Properties
+
+* id -- ```incorrect_trial```
+
 ## reward_issued
 
 Indicates whether a reward has been issued. If routed to neurotrigger, this will cause the reward to be released.
