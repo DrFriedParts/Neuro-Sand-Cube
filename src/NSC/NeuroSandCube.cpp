@@ -113,10 +113,13 @@ void NeuroSandCube::Initialize(fpsent* player)
 		return State(bRewardIssued);
 	});
 
-	distributor.AddState("trial_start",
-	[player] () -> State
+	distributor.AddEvent("trial_start",
+	[player] () -> NSCEvent
 	{
-		return State(player->levelStart);
+		NSCEvent e;
+		e.triggered = player->levelStart;
+		e.description = std::string(player->prevMap);
+		return e;
 	});
 
 	distributor.AddState("correct_trial",

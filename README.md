@@ -147,6 +147,7 @@ Player's total distance traveled from the start of the level.
 
 Indicates that a trial has started.  At the moment, a trial map is determined to be any map that contains the word 'newtrain'.  This will be 
 made more flexible in the near future.
+The 'value' returned is the name of the map.
 
 ### Properties
 
