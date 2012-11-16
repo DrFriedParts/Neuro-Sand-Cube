@@ -7,9 +7,19 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <utility>
 
-typedef boost::variant<int, float, bool> State;				// shared states can be int, float, or bool. others can be added but this is fine for now
+struct NSCEvent
+{
+public:
+	
+	bool triggered;
+	std::string description;
+};
+
+typedef boost::variant<int, float, bool/*, NSCEvent*/> State;				// shared states can be int, float, or bool. others can be added but this is fine for now
 typedef std::function<State ()> StateFunctor;
+typedef std::function<NSCEvent ()> EventFunctor;
 
 
 /* This class is responsible for maintaining a list of states
@@ -52,6 +62,8 @@ public:
         return lhs == rhs;
     }
 
+
+
 };
 
 class State_difference : public boost::static_visitor< float > //hax
@@ -69,6 +81,16 @@ public:
     {
         return lhs - rhs;
     }
+	
+    float operator()( const std::string & lhs, const std::string & rhs ) const
+    {
+		return lhs.compare(rhs);
+    }
+
+	/*float operator()( const NSCEvent & lhs, const NSCEvent & rhs ) const
+    {
+		return lhs.triggered - rhs.triggered;
+    }*/
 
 };
 
@@ -81,6 +103,13 @@ public:
     {
 		std::ostringstream ss;
 		ss << t;
+		return std::string(ss.str());
+    }
+
+    std::string operator()( const NSCEvent & t) const
+    {
+		std::ostringstream ss;
+		ss << t.description;
 		return std::string(ss.str());
     }
 

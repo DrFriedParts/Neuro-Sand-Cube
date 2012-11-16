@@ -9,6 +9,7 @@
 #include <map>
 #include <functional>
 
+
 #include <boost/shared_ptr.hpp>
 
 
@@ -33,6 +34,12 @@ struct StateDistribution
 
 	bool toBeDistributed;
 
+	//hack
+	bool event;
+	EventFunctor eventFunction;
+	std::string eventDescription;
+
+
 	
 };
 
@@ -51,7 +58,8 @@ public:
 	static StateDistributor& GetInstance();
 	~StateDistributor(void);
 
-	void AddState(std::string id, StateFunctor);
+	void AddState(std::string id, StateFunctor, bool event = false);
+	void StateDistributor::AddEvent(std::string id, EventFunctor e);
 	bool AddDistribution(StateAttributes attributes);
 	void AddSubscriber(boost::shared_ptr<ConnectionInterface> subscriber);
 	void Distribute(); // this should be called every frame.
@@ -73,6 +81,8 @@ private:
 	std::vector<boost::shared_ptr<ConnectionInterface> > subscribers;
 	std::map<std::string, boost::shared_ptr<ConsumerDistributionCache> > consumerMap;
 	std::map<std::string, StateFunctor > states;
+	std::map<std::string, EventFunctor > events;
+	//
 
 	int currentFrame;		// frames since the distributor was started. 
 };

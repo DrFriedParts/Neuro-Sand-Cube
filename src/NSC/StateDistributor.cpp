@@ -22,9 +22,15 @@ StateDistributor::~StateDistributor(void)
 }
 
 
-void StateDistributor::AddState(std::string id, StateFunctor functor)
+void StateDistributor::AddState(std::string id, StateFunctor functor, bool event)
 {
 	states[id] = functor;
+	
+}
+
+void StateDistributor::AddEvent(std::string id, EventFunctor e)
+{
+	events[id] = e;
 	
 }
 
@@ -39,6 +45,7 @@ bool StateDistributor::AddDistribution(StateAttributes attributes)
 	distribution->framesPassedSinceDistribution = 0;
 	distribution->numChanges = 0;
 	distribution->toBeDistributed = false;
+	distribution->event = false;
 
 	// add shared state
 
@@ -47,7 +54,17 @@ bool StateDistributor::AddDistribution(StateAttributes attributes)
 	if (iterator != states.end())
 		distribution->valueFunction = iterator->second;
 	else
-		return false;
+	{
+		// check events
+		auto iterator = events.find(attributes.id);
+		if (iterator != events.end())
+		{
+			distribution->eventFunction = iterator->second;
+			distribution->event = true;
+		}
+		else
+			return false;
+	}
 
 	distributions.push_back(distribution);
 
@@ -101,7 +118,16 @@ void StateDistributor::Distribute()
 	for (unsigned int i =0; i < distributions.size(); ++i)
 	{
 		boost::shared_ptr<StateDistribution> distribution = distributions[i];
-		distribution->value = distribution->valueFunction();
+		if (distribution->event)
+		{
+			NSCEvent e = distribution->eventFunction();
+			distribution->value = State(e.triggered);
+			distribution->eventDescription = e.description;
+		}
+		else
+		{
+			distribution->value = distribution->valueFunction();
+		}
 		bool hasChanged = !(boost::apply_visitor(State_equals(), distribution->value , distribution->prevValue));
 		// this is a hack to get booleans to work differently to other variables - they should only transmit if they have just become true
 		// this is because the bools used so far are actually events and not bools at all. so this should be changed somehow soon
@@ -167,15 +193,26 @@ void StateDistributor::FlushDistribution()
 			{
 				// TK: HACK : temporary hack to let the neurotrigger firmware still issue rewards, this will be removed as soon as the firmware is updated
 				std::string id = state->attributes.id;
+				std::string value;
+				bool str = false;
+
+				if (state->event)
+				{
+					value = "\"" +state->eventDescription + "\"";
+					str = true;
+				}
+				else if (state->attributes.delta)
+					value = boost::apply_visitor(State_tostring(), state->delta);
+				else
+					value = boost::apply_visitor(State_tostring(), state->value);
+
 				if (subscriber->id.substr(0,3).compare("COM") == 0)
 				{
 					if (id.compare("reward_issued") == 0)
 						id = "level_restart";
 				}
-				if (state->attributes.delta)
-					builder.Add(id,boost::apply_visitor(State_tostring(), state->delta),state->numChanges);
-				else
-					builder.Add(id,boost::apply_visitor(State_tostring(), state->value),state->numChanges);
+				
+				builder.Add(id,value,state->numChanges);
 			}
 		}
 
