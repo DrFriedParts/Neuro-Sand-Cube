@@ -3,6 +3,7 @@
 
 #include "cube.h"
 
+
 #ifndef STANDALONE
 extern int dedicated;
 #endif
@@ -420,6 +421,8 @@ static const struct guninfo { short sound, attackdelay, damage, spread, projspee
 
 #include "ai.h"
 
+
+
 // inherited by fpsent and server clients
 struct fpsstate
 {
@@ -724,6 +727,7 @@ struct fpsent : dynent, fpsstate
 
     vec muzzle;
 
+	// below are additional variables added for NSC
 	// TK: position where entity spawns
 	vec startingPosition;
 	float distance_traveled;
@@ -731,6 +735,7 @@ struct fpsent : dynent, fpsstate
 	bool rightClick;
 	bool teleported;
 	char prevMap[512];
+	float timeSinceMapStart;
 
     fpsent() : weight(100), clientnum(-1), privilege(PRIV_NONE), lastupdate(0), plag(0), ping(0), lifesequence(0), respawned(-1), suicided(-1), lastpain(0), attacksound(-1), attackchan(-1), idlesound(-1), idlechan(-1), frags(0), flags(0), deaths(0), totaldamage(0), totalshots(0), edit(NULL), smoothmillis(-1), playermodel(-1), ai(NULL), ownernum(-1), muzzle(-1, -1, -1)
     {
@@ -740,6 +745,7 @@ struct fpsent : dynent, fpsstate
 		teleported = false;
 		prevMap[0] = '\0';
 		distance_traveled = 0.0f;
+		timeSinceMapStart = 0.0f;
         respawn();
     }
     ~fpsent()
