@@ -4,6 +4,7 @@
 #include <fstream>
 
 #include "boost/date_time/posix_time/posix_time.hpp"
+#include <time.h>
 
 
 
@@ -117,14 +118,38 @@ std::string JSONBuilder::Get(int framestamp)
 	if (message.compare("") == 0)
 		return message;
 
-	boost::posix_time::ptime t(boost::posix_time::microsec_clock::local_time());
+	boost::posix_time::ptime t1(boost::posix_time::time_from_string("1970-01-01"));
+
+	boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
+
+	boost::posix_time::time_period period(t1,t2);
+	double t = period.length().total_milliseconds();
+
 	std::ostringstream ss;
 	
-	ss << t.time_of_day();
+	//ss << t.time_of_day();
+
+	time_t seconds = time(NULL);
+	
+
+
+	boost::posix_time::ptime epoch(boost::gregorian::date(1970, 1, 1));
+	boost::posix_time::time_duration dur;
+
+	dur = t2 - epoch; 
+
+	long long tstamp = dur.total_milliseconds();
+
+	//if (t < epoch) tstamp = -tstamp ; 
+	ss << tstamp;
+
 	std::string s(ss.str());
 
+	
 
-	Add("timestamp",s.substr(0,s.length() - 3),true); // leave out the last 3 - microseconds not necessary - i think ??
+
+
+	Add("timestamp",s/*.substr(0,s.length() )*/,true); // leave out the last 3 - microseconds not necessary - i think ??
 	ss = std::ostringstream();
 	ss << framestamp;
 	std::string s2(ss.str());
