@@ -9,11 +9,39 @@
 	[	
 		{
 			"id":"level_restart", 
-			"consumers":["neurotrigger","vr_controller"],
+			"consumers":["vr_controller"],
 			"only_on_change":true, 
 			"reset_counter_on_restart":false, 
 			"interval":0 
 		},	
+		{
+			"id":"reward_issued", 
+			"consumers":["neurotrigger","vr_controller"],
+			"only_on_change":true, 
+			"reset_counter_on_restart":false, 
+			"interval":0
+		},
+		{
+			"id":"trial_start", 
+			"consumers":["vr_controller"],
+			"only_on_change":true, 
+			"reset_counter_on_restart":false, 
+			"interval":0
+		},
+		{
+			"id":"correct_trial", 
+			"consumers":["vr_controller"],
+			"only_on_change":true, 
+			"reset_counter_on_restart":false, 
+			"interval":0
+		},
+		{
+			"id":"incorrect_trial", 
+			"consumers":["vr_controller"],
+			"only_on_change":true, 
+			"reset_counter_on_restart":false, 
+			"interval":0
+		},
 		{
 			"id":"player_left_click", 
 			"consumers":["neurotrigger","vr_controller"],
