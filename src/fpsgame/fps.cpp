@@ -18,6 +18,7 @@ void issueReward()
 ICOMMAND(issue_reward, "", (), issueReward());
 
 
+
 namespace game
 {
     bool intermission = false;
@@ -32,6 +33,14 @@ namespace game
     fpsent *player1 = NULL;         // our client
     vector<fpsent *> players;       // other clients
     int savedammo[NUMGUNS];
+
+	void resetPosition()
+	{
+		player1->o = player1->newpos = player1->startingPosition;
+	}
+
+	ICOMMAND(reset_position, "", (), resetPosition());
+
 
     bool clientoption(const char *arg) { return false; }
 
