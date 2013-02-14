@@ -1762,6 +1762,7 @@ void modifygravity(physent *pl, bool water, int curtime)
 
 VARR(nastylava, 0, 1, 1);
 
+// NSC
 VARR(disable_move, 0, 0, 1);
 
 bool moveplayer(physent *pl, int moveres, bool local, int curtime)
