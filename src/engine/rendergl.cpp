@@ -864,6 +864,9 @@ void fixcamerarange()
     while(camera1->yaw>=360.0f) camera1->yaw -= 360.0f;
 }
 
+//NSC
+VARR(disable_turn, 0, 0, 1);
+
 void mousemove(int dx, int dy)
 {
     float cursens = sensitivity, curaccel = mouseaccel;
@@ -892,8 +895,12 @@ void mousemove(int dx, int dy)
         return; //game processed mouse movement, don't bother
     }
 
-    camera1->yaw += dx*cursens;
-    camera1->pitch -= dy*cursens;
+	// NSC
+	if (!disable_turn)
+	{
+		camera1->yaw += dx*cursens;
+		camera1->pitch -= dy*cursens;
+	}
     fixcamerarange();
     if(camera1!=player && !detachedcamera)
     {

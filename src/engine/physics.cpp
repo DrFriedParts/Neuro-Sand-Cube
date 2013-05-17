@@ -1762,8 +1762,16 @@ void modifygravity(physent *pl, bool water, int curtime)
 
 VARR(nastylava, 0, 1, 1);
 
+// NSC
+VARR(disable_move, 0, 0, 1);
+
 bool moveplayer(physent *pl, int moveres, bool local, int curtime)
 {
+
+	// NSC disable_move 
+
+	if (disable_move)
+		return true;
     int material = lookupmaterial(vec(pl->o.x, pl->o.y, pl->o.z + (3*pl->aboveeye - pl->eyeheight)/4));
     bool water = isliquid(material&MATF_VOLUME);
     bool floating = pl->type==ENT_PLAYER && (pl->state==CS_EDITING || pl->state==CS_SPECTATOR);

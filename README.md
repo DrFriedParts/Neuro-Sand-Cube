@@ -270,6 +270,12 @@ The following extensions have been made to the CUBE2 scripting interface:
 
 ```invmousex``` inverts the mouse x-axis, as the CUBE2 attribute ```invmouse``` does for the y-axis.
 
+### disable_move 
+```disable_move``` disables player movement
+
+### disable_turn 
+```disable_turn``` disables player rotation
+
 ## Additional commands
 
 ### issue_reward

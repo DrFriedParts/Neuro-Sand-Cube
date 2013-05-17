@@ -68,7 +68,7 @@
       <AdditionalOptions>-DBOOST_DATE_TIME_NO_LIB -DBOOST_REGEX_NO_LIB %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>enet.lib;zdll.lib;opengl32.lib;SDL.lib;SDL_image.lib;ws2_32.lib;SDL_mixer.lib;winmm.lib;dbghelp.lib;kernel32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>enet.lib;zdll.lib;opengl32.lib;SDL.lib;SDL_image.lib;ws2_32.lib;SDL_mixer.lib;winmm.lib;dbghelp.lib;kernel32.lib;user32.lib;libboost_date_time-vc100-mt-gd-1_51.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\..\..\bin\sandbox_fps.exe</OutputFile>
       <AdditionalLibraryDirectories>..\..\..\lib;..\..\..\boost_1.51_0_subset\stage;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -107,7 +107,7 @@
       <AdditionalOptions>-DBOOST_DATE_TIME_NO_LIB -DBOOST_REGEX_NO_LIB %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>enet.lib;zdll.lib;opengl32.lib;SDL.lib;SDL_image.lib;ws2_32.lib;SDL_mixer.lib;winmm.lib;dbghelp.lib;kernel32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>enet.lib;zdll.lib;opengl32.lib;SDL.lib;SDL_image.lib;ws2_32.lib;SDL_mixer.lib;winmm.lib;dbghelp.lib;kernel32.lib;user32.lib;libboost_date_time-vc100-mt-1_51.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\..\..\bin\sandbox_fps.exe</OutputFile>
       <AdditionalLibraryDirectories>..\..\..\lib;..\..\..\boost_1.51_0_subset\stage;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
